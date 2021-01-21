@@ -37,7 +37,7 @@
         <div data-v-fae5bece="" id="parent" class="row">
             <div data-v-fae5bece="" id="input" class="column col-7">
                 <h2 class="text-header">Input</h2>
-                <form class="">
+                <form class="" method="post" action="/calculate">
                     <div class="row">
                         <div class="col">
                             <div id="block-size-group" role="group" class="form-group mt-2 mr-2" title="panget">
@@ -152,7 +152,10 @@
                 </form>
             </div>
             <div data-v-fae5bece="" id="output" class="column col">
-                
+                <% if (result) { %>
+
+
+                <% } %>
             </div>
         </div>
     </div>

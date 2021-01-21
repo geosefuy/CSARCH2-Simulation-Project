@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = 8080;
 
-const { home } = require('./route');
+const { home, calculate } = require('./route');
 
 
 
@@ -18,7 +18,7 @@ app.use(bodyParser.json()); // parse formdata client
 
 // App routes
 app.get('/', home);
-// app.post('/one_table/getquery1', oneQuery1);
+app.post('/calculate', calculate);
 
 // Set the port the app will listen on
 app.listen(port, () => {
