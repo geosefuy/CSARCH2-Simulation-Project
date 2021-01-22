@@ -93,6 +93,11 @@ const parseInputAddress = readSequence => {
     return splitSequence
 }
 
+/*    Check if power of Two    */
+function checkPowerofTwo(n) {
+    return n && (n & (n - 1)) === 0;
+}
+
 module.exports = {
     /*  Simulates the FA / LRU cache replacement algorithm  */
     // simulate: (blockSize, cacheMemorySize, parsedInput, hexadec, steps) => {
