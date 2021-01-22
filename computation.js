@@ -1,6 +1,6 @@
 /*  Used to convert cacheMemory/mainMemory to blocks when input is in words -> (Assuming Block Size is also in words)   */
-function convertToBlocks(blockSize, memorySizeWords) {
-    return Math.floor(memorySizeWords / blockSize);
+function convertToBlocks(blockSize, words) {
+    return Math.floor(words / blockSize);
 }
 
 /*  Checks if token is valid in numeric or in hex (If it is specified) -> (With the aid of RegEx)   */
@@ -11,6 +11,26 @@ function checkToken(token, hexadec) {
     else {
         return Boolean(token.match(/^[0-9]+$/i)) || Boolean(token.match(/^[0-9]+L[0-9]+L[1-9]+[0-9]*/i)); 
     }
+}
+
+/*  Checks if the input is within the range of the declared main memory size -> (In terms of block).   */
+function checkRange(mainMemorySize, parsedInput) {
+    for (let i = 0; i < parsedInput.length; i++) {
+        if (parsedInput[i] >= mainMemorySize) {
+            return false; 
+        }
+    }
+    return true; 
+}
+
+/*  Checks if the input data is in any of the cache blocks  */
+function checkCache(cache, inputData) {
+    for(let i = 0; i < cache.length; i++) {
+        if (cache[i].data == inputData) {
+            return i; 
+        }
+    }
+    return -1; 
 }
 
 /*  Parses the sequence and converts loops to singleton values  */
@@ -57,54 +77,59 @@ function parseInput(input, hexadec) {
     return parsedInput; 
 }
 
-/*  Checks if the input is within the range of the declared main memory size -> (In terms of block).   */
-function checkRange(mainMemorySize, parsedInput) {
-    for (let i = 0; i < parsedInput.length; i++) {
-        if (parsedInput[i] >= mainMemorySize) {
-            return false; 
-        }
+const parseInputBlock = readSequence => {
+    let splitSequence = readSequence.split('\r\n')
+
+    //TODO: Manipulate loops
+
+    return splitSequence
+}
+
+const parseInputAddress = readSequence => {
+    let splitSequence = readSequence.split('\r\n')
+
+    //TODO: Manipulate loops
+
+    return splitSequence
+}
+
+module.exports = {
+    /*  Simulates the FA / LRU cache replacement algorithm  */
+    // simulate: (blockSize, cacheMemorySize, parsedInput, hexadec, steps) => {
+    //     var cacheAccess = 1;
+    //     var memoryAccess = 10;
+    //     var hits = 0; 
+    //     var misses = 0; 
+    //     var sum = [];
+    //     var lowestSum = 0;
+    //     var lastStatus = "N/A";
+    //     var averageAccess = 0;
+    //     var totalAccess = 0; 
+    //     var cacheMemory = [];
+    //     var stepsDone = 0;
+    // },
+    simulate: data => {
+        let blockSize = data.blockSize
+        let mmSize = data.mmType !== "blocks" ? convertToBlocks(blockSize, data.mmSize) : data.mmSize
+        let cacheSize = data.mmType !== "blocks" ? convertToBlocks(blockSize, data.cacheSize) : data.cacheSize
+
+        let parsedReadSeq = data.readType === "blocks" ? parseInputBlock(data.readSeq) : parseInputAddress(data.readSeq)
+
+
+    },
+
+    /*  Prepares the information of the text file   */
+    prepareTextInfo: (values) => {
+        var content = ""; 
+        var labels = ["Cache Hits: ", "Cache Misses: ", "Average Access Time: ", "Total Access Time: "]; 
+        labels.forEach((label, index) => {
+            content = content.concat(label, values[index], "\n"); 
+        });
+        content = content.concat("Cache Memory: \n"); 
+        var cacheMemory = values[7];
+        for (let i = 0; i < cacheMemory.length; i++) {
+            content = content.concat("Block Number: ", cacheMemory[i].block, " Data: ", cacheMemory[i].data, "\n"); 
+        } 
+        return content; 
     }
-    return true; 
 }
-
-/*  Checks if the input data is in any of the cache blocks  */
-function checkCache(cache, inputData) {
-    for(let i = 0; i < cache.length; i++) {
-        if (cache[i].data == inputData) {
-            return i; 
-        }
-    }
-    return -1; 
-}
-
-/*  Simulates the FA / LRU cache replacement algorithm  */
-function simulate(blockSize, cacheMemorySize, parsedInput, hexadec, steps) {
-    var cacheAccess = 1;
-    var memoryAccess = 10;
-    var hits = 0; 
-    var misses = 0; 
-    var sum = [];
-    var lowestSum = 0;
-    var lastStatus = "N/A";
-    var averageAccess = 0;
-    var totalAccess = 0; 
-    var cacheMemory = [];
-    var stepsDone = 0;
-}
-
-/*  Prepares the information of the text file   */
-function prepareTextInfo(values) {
-    var content = ""; 
-    var labels = ["Cache Hits: ", "Cache Misses: ", "Average Access Time: ", "Total Access Time: "]; 
-    labels.forEach((label, index) => {
-        content = content.concat(label, values[index], "\n"); 
-    });
-    content = content.concat("Cache Memory: \n"); 
-    var cacheMemory = values[7];
-    for (let i = 0; i < cacheMemory.length; i++) {
-        content = content.concat("Block Number: ", cacheMemory[i].block, " Data: ", cacheMemory[i].data, "\n"); 
-    } 
-    return content; 
-}
-
-export { convertToBlocks, checkToken, parseInput, checkRange, checkCache, simulate, prepareTextInfo }; 
