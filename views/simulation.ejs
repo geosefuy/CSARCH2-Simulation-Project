@@ -6,6 +6,7 @@
     <title>CSARCH Simulation Project</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style scoped>
         #wrapper {
           font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -15,7 +16,6 @@
         
         .column {
           padding: 30px;
-          height: 100vh;
         }
         
         #input {
@@ -30,23 +30,160 @@
         input.radio{
             visibility: hidden;
         }
+        .card-body{
+            color:  #3a3a3a;
+        }
     </style>
+    <script>
+        $(document).ready(function(){
+            $("#mm-size-group2").hide()
+            $("#cache-size-group2").hide()
+            $("#read-seq-group2").hide()
+            $("#mm-size-words").prop("required", false);
+            $("#cache-size-words").prop("required", false);
+            $("#read-seq-address").prop("required", false);
+            $("#byte").on("click", function(){
+                $("#byte").addClass("btn-warning");
+                $("#word").removeClass("btn-warning");
+                $("#word").addClass("btn-secondary");
+                $("#config1").val($("#byte").attr("id"));
+                $("#block-size-header").text("bytes");
+                $("#mm-label").text("Main Memory Size (in bytes)");
+                $("#mm-size-header").text("bytes");
+                $("#cache-label").text("Cache Memory Size (in bytes)");
+                $("#cache-size-header").text("bytes");
+                $("#words-main").val("bytes");
+                $("#words-cache").val("bytes");
+                if ($("#config2").val() == "words") {
+                    $("#config2").val("bytes");
+                }
+                if ($("#config3").val() == "words") {
+                    $("#config3").val("bytes");
+                }
+                if ($("#config4").val() == "words") {
+                    $("#config4").val("bytes");
+                }
+            })
+            $("#word").on("click", function(){
+                $("#byte").addClass("btn-secondary");
+                $("#byte").removeClass("btn-warning");
+                $("#word").addClass("btn-warning");
+                $("#config1").val($("#word").attr("id"));
+                $("#block-size-header").text("words");
+                $("#mm-label").text("Main Memory Size (in words)");
+                $("#mm-size-header").text("words");
+                $("#cache-label").text("Cache Memory Size (in words)");
+                $("#cache-size-header").text("words");
+                $("#words-main").val("words");
+                $("#words-cache").val("words");
+                if ($("#config2").val() == "bytes") {
+                    $("#config2").val("words");
+                }
+                if ($("#config3").val() == "bytes") {
+                    $("#config3").val("words");
+                }
+                if ($("#config4").val() == "bytes") {
+                    $("#config4").val("words");
+                }
+            })
+            $("#nonload").on("click", function(){
+                $("#nonload").addClass("btn-warning");
+                $("#load").removeClass("btn-warning");
+                $("#load").addClass("btn-secondary");
+                $("#config2").val($("#nonload").attr("id"));
+            })
+            $("#load").on("click", function(){
+                $("#nonload").addClass("btn-secondary");
+                $("#nonload").removeClass("btn-warning");
+                $("#load").addClass("btn-warning");
+                $("#config2").val($("#load").attr("id"));
+            })
+            $("#blocks-main").on("click", function(){
+                $("#blocks-main").addClass("btn-warning");
+                $("#words-main").removeClass("btn-warning");
+                $("#words-main").addClass("btn-secondary");
+                $("#mm-size-group1").show();
+                $("#mm-size-group2").hide();
+                $("#config3").val($("#blocks-main").val());
+                $("#mm-size-words").prop("required", false);
+                $("#mm-size-blocks").prop("required", true);
+            })
+            $("#words-main").on("click", function(){
+                $("#blocks-main").addClass("btn-secondary");
+                $("#blocks-main").removeClass("btn-warning");
+                $("#words-main").addClass("btn-warning");
+                $("#mm-size-group2").show();
+                $("#mm-size-group1").hide();
+                $("#config3").val($("#words-main").val());
+                $("#mm-size-words").prop("required", true);
+                $("#mm-size-blocks").prop("required", false);
+            })
+            $("#blocks-cache").on("click", function(){
+                $("#blocks-cache").addClass("btn-warning");
+                $("#words-cache").removeClass("btn-warning");
+                $("#words-cache").addClass("btn-secondary");
+                $("#cache-size-group1").show();
+                $("#cache-size-group2").hide();
+                $("#config4").val($("#blocks-cache").val());
+                $("#cache-size-words").prop("required", false);
+                $("#cache-size-blocks").prop("required", true);
+            })
+            $("#words-cache").on("click", function(){
+                $("#blocks-cache").addClass("btn-secondary");
+                $("#blocks-cache").removeClass("btn-warning");
+                $("#words-cache").addClass("btn-warning");
+                $("#cache-size-group2").show();
+                $("#cache-size-group1").hide();
+                $("#config4").val($("#words-cache").val());
+                $("#cache-size-words").prop("required", true);
+                $("#cache-size-blocks").prop("required", false);
+            })
+            $("#blocks-read").on("click", function(){
+                $("#blocks-read").addClass("btn-warning");
+                $("#address-read").removeClass("btn-warning");
+                $("#address-read").addClass("btn-secondary");
+                $("#read-seq-group1").show();
+                $("#read-seq-group2").hide();
+                $("#config5").val($("#blocks-read").val());
+                $("#read-seq-blocks").prop("required", true);
+                $("#read-seq-address").prop("required", false);
+            })
+            $("#address-read").on("click", function(){
+                $("#blocks-read").addClass("btn-secondary");
+                $("#blocks-read").removeClass("btn-warning");
+                $("#address-read").addClass("btn-warning");
+                $("#read-seq-group2").show();
+                $("#read-seq-group1").hide();
+                $("#config5").val($("#address-read").val());
+                $("#read-seq-blocks").prop("required", false);
+                $("#read-seq-address").prop("required", true);
+            })
+            $("#submit-input").on("click", function(){
+
+            })
+        });
+    </script>
 </head>
 <body>
-    <div data-v-fae5bece="" id="wrapper" class="container-fluid">
-        <div data-v-fae5bece="" id="parent" class="row">
-            <div data-v-fae5bece="" id="input" class="column col-7">
+    <div id="wrapper" class="container-fluid">
+        <div id="parent" class="row">
+            <div id="input" class="column col-7">
                 <h2 class="text-header">Input</h2>
                 <form class="" method="post" action="/calculate">
                     <div class="row">
+                        <input type="button" class="btn btn-warning" id="word" value="Word Addressable" name="word">
+                        <input type="button" class="btn btn-secondary" id="byte" value="Byte Addressable" name="byte">
+                        <input type="hidden" id="config1" name="config1" value="word">
+                    </div>
+                    <div class="row">
                         <div class="col">
-                            <div id="block-size-group" role="group" class="form-group mt-2 mr-2" title="panget">
-                                <label id="block-size-group__BV_label_" for="block-size" class="d-block">Block Size</label>
+                            <div id="block-size-group" role="group" class="form-group mt-2 mr-2">
+                                <label id="block-size-group__BV_label_" for="block-size" class="col-form-label pt-0">Block Size</label>
                                 <div>
                                     <div role="group" class="input-group">
-                                        <input id="block-size" type="number" placeholder="Enter block size" required="required" aria-required="true" class="form-control">
+                                        <input id="block-size" type="number" placeholder="Enter block size" required class="form-control" name="blockSize">
                                         <div class="input-group-append">
-                                            <div class="input-group-text">words</div>
+                                            <div class="input-group-text" id="block-size-header">words</div>
                                         </div>
                                     </div>
                                     <div class="invalid-feedback"> Your block size should be a power of two. </div>
@@ -55,51 +192,60 @@
                         </div>
                         <div class="col">
                             <fieldset id="cache-miss-group" class="form-group mt-2 ml-2">
-                                <legend id="cache-miss-group__BV_label_" tabindex="-1" class="bv-no-focus-ring col-form-label pt-0">Cache Miss Algorithm</legend>
+                                <legend id="cache-miss-group__BV_label_" class="col-form-label pt-0">Cache Miss Algorithm</legend>
                                 <div>
-                                    <div role="radiogroup" tabindex="-1" class="btn-block btn-group-toggle btn-group bv-no-focus-ring" id="__BVID__10">
-                                        <label class="btn btn-secondary"><input selected="selected" type="radio" class="radio" value="true" id="__BVID__11" name="__BVID__10">No Load-Through</label>
-                                        <label class="btn btn-secondary"><input type="radio" class="radio" value="false" id="__BVID__12" name="__BVID__10">Load Through</label>
-                                    </div><!---->
-                                </div></fieldset>
-                            </div>
+                                    <input type="button" class="btn btn-warning" id="nonload" value="Non Load-Through" name="nonload">
+                                    <input type="button" class="btn btn-secondary" id="load" value="Load-Through" name="load">
+                                    <input type="hidden" id="config2" name="config2" value="nonload">
+                                </div>
+                            </fieldset>
+                        </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <div id="mm-size-group" role="group" class="form-group mt-2 mr-2">
-                                    <label id="mm-size-group__BV_label_" for="mm-size" class="d-block">Main Memory Size (in blocks)</label>
-                                    <div>
-                                        <div role="group" class="input-group"><!----><input id="mm-size" type="number" placeholder="Enter main memory size" required="required" aria-required="true" class="form-control">
-                                            <div class="input-group-append">
-                                                <div class="input-group-text">blocks</div>
-                                            </div>
-                                        </div>
-                                        <div class="invalid-feedback"> Your main memory size should be a power of two. </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div id="mm-size-group" role="group" class="form-group mt-2 ml-2">
-                                    <label id="mm-size-group__BV_label_" for="mm-size" class="d-block">Main Memory Size (in words)</label>
-                                    <div>
-                                        <div role="group" class="input-group"><!---->
-                                            <input id="mm-size" type="number" placeholder="Enter main memory size" required="required" aria-required="true" class="form-control">
-                                            <div class="input-group-append">
-                                                <div class="input-group-text">words</div>
-                                            </div>
-                                        </div>
-                                        <div class="invalid-feedback"> Your main memory size should be a power of two. </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <div id="cache-size-group" role="group" class="form-group mt-2 mr-2">
-                                    <label id="cache-size-group__BV_label_" for="cache-size" class="d-block">Cache Size (in blocks)</label>
+                                <div id="mm-size-group1" role="group" class="form-group mt-2 mr-2">
+                                    <label id="mm-size-group__BV_label_" for="mm-size" class="col-form-label pt-0">Main Memory Size (in blocks)</label>
                                     <div>
                                         <div role="group" class="input-group">
-                                            <input id="cache-size" type="number" placeholder="Enter cache size" required="required" aria-required="true" class="form-control">
+                                            <input id="mm-size-blocks" type="number" placeholder="Enter main memory size" required class="form-control" name="mmSizeBlocks">
+                                            <div class="input-group-append">
+                                                <div class="input-group-text">blocks</div>
+                                            </div>
+                                        </div>
+                                        <div class="invalid-feedback"> Your main memory size should be a power of two. </div>
+                                    </div>
+                                </div>
+                                <div id="mm-size-group2" role="group" class="form-group mt-2 ml-2">
+                                    <label id="mm-label" for="mm-size" class="col-form-label pt-0">Main Memory Size (in words)</label>
+                                    <div>
+                                        <div role="group" class="input-group">
+                                            <input id="mm-size-words" type="number" placeholder="Enter main memory size" required class="form-control" name="mmSizeWords">
+                                            <div class="input-group-append">
+                                                <div class="input-group-text" id="mm-size-header">words</div>
+                                            </div>
+                                        </div>
+                                        <div class="invalid-feedback"> Your main memory size should be a power of two. </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <fieldset id="mm-size-group" class="form-group mt-2 ml-2">
+                                    <legend id="mm-size-group__BV_label_" class="col-form-label pt-0">Main Memory Size</legend>
+                                    <div>
+                                        <input type="button" class="btn btn-warning" id="blocks-main" value="blocks">
+                                        <input type="button" class="btn btn-secondary" id="words-main" value="words">
+                                        <input type="hidden" id="config3" name="config3" value="blocks">
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div id="cache-size-group1" role="group" class="form-group mt-2 mr-2">
+                                    <label id="cache-size-group__BV_label_" for="cache-size" class="col-form-label pt-0">Cache Size (in blocks)</label>
+                                    <div>
+                                        <div role="group" class="input-group">
+                                            <input id="cache-size-blocks" type="number" placeholder="Enter cache size" required class="form-control" name="cacheSizeBlocks">
                                             <div class="input-group-append">
                                                 <div class="input-group-text">blocks</div>
                                             </div>
@@ -107,51 +253,72 @@
                                         <div class="invalid-feedback"> Your cache size should be a power of two. </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col">
-                                <div id="cache-size-group" role="group" class="form-group mt-2 ml-2">
-                                    <label id="cache-size-group__BV_label_" for="cache-size" class="d-block">Cache Size (in words)</label>
+                                <div id="cache-size-group2" role="group" class="form-group mt-2 ml-2">
+                                    <label id="cache-label" for="cache-size" class="col-form-label pt-0">Cache Size (in words)</label>
                                     <div>
-                                        <div role="group" class="input-group"><!---->
-                                            <input id="cache-size" type="number" placeholder="Enter cache size" required="required" aria-required="true" class="form-control">
+                                        <div role="group" class="input-group">
+                                            <input id="cache-size-words" type="number" placeholder="Enter cache size" required class="form-control" name="cacheSizeWords">
                                             <div class="input-group-append">
-                                                <div class="input-group-text">words</div>
+                                                <div class="input-group-text" id="cache-size-header">words</div>
                                             </div>
                                         </div>
                                         <div class="invalid-feedback"> Your cache size should be a power of two. </div>
                                     </div>
                                 </div>
                             </div>
+                            <div class="col">
+                                <fieldset id="cache-miss-group" class="form-group mt-2 ml-2">
+                                    <legend id="cache-miss-group__BV_label_" class="col-form-label pt-0">Cache Memory Size</legend>
+                                    <div>
+                                        <input type="button" class="btn btn-warning" id="blocks-cache" value="blocks" >
+                                        <input type="button" class="btn btn-secondary" id="words-cache" value="words" >
+                                        <input type="hidden" id="config4" name="config4" value="blocks">
+                                    </div>
+                                </fieldset>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <div id="read-seq-block-group" role="group" class="form-group mt-2 mr-2">
-                                    <label id="read-seq-block-group__BV_label_" for="read-seq-block" class="d-block">Read Sequence (blocks)</label>
+                                <div id="read-seq-group1" role="group" class="form-group mt-2 mr-2">
+                                    <label id="read-seq-block-group__BV_label_" for="read-seq-block" class="col-form-label pt-0">Read Sequence (blocks)</label>
                                     <div>
-                                        <textarea id="read-seq-block" placeholder="Enter block sequence to be read separated by newlines" required="required" rows="10" aria-required="true" class="form-control" style="resize: none;" wrap="soft"></textarea>
+                                        <textarea id="read-seq-blocks" placeholder="Enter block sequence to be read separated by newlines" required rows="10" class="form-control" name="readBlocks" style="resize: none;" wrap="soft"></textarea>
+                                    </div>
+                                </div>
+                                <div id="read-seq-group2" role="group" class="form-group mt-2 ml-2">
+                                    <label id="read-seq-address-group__BV_label_" for="read-seq-address" class="col-form-label pt-0">Read Sequence (address)</label>
+                                    <div>
+                                        <textarea id="read-seq-address" placeholder="Enter address sequence to be read separated by newlines" required rows="10" class="form-control" name="readAddress" style="resize: none;" wrap="soft"></textarea>
                                     </div>
                                 </div>
                             </div>
                             <div class="col">
-                                <div id="read-seq-word-group" role="group" class="form-group mt-2 ml-2">
-                                    <label id="read-seq-word-group__BV_label_" for="read-seq-word" class="d-block">Read Sequence (words)</label>
+                                <fieldset id="read-seq-group" class="form-group mt-2 ml-2">
+                                    <legend id="read-seq-header" class="col-form-label pt-0">Read Sequence</legend>
                                     <div>
-                                        <textarea id="read-seq-word" placeholder="Enter word sequence to be read separated by newlines" required="required" rows="10" aria-required="true" class="form-control" style="resize: none;" wrap="soft"></textarea>
+                                        <input type="button" class="btn btn-warning" id="blocks-read" value="blocks">
+                                        <input type="button" class="btn btn-secondary" id="address-read" value="address">
+                                        <input type="hidden" id="config5" name="config5" value="blocks">
                                     </div>
-                                </div>
+                                </fieldset>
                             </div>
                         </div>
-                        <div class="card mt-2"><!---->
-                            <div class="card-header">Input Result</div>
-                            <div class="card-body">
-                                <pre></pre>
-                            </div>
-                        </div>
-                    <button id="submit-input" type="submit" class="btn mt-4 btn btn-block btn-secondary">Submit</button>
-                    <button id="reset-input" type="reset" class="btn mt-3 btn btn-block btn-secondary">Reset</button>
+                    <button id="submit-input" type="submit" class="btn mt-4 btn btn-block btn-success">Submit</button>
+                    <button id="reset-input" type="reset" class="btn mt-4 btn btn-block btn-danger" >Reset</button>
                 </form>
             </div>
-            <div data-v-fae5bece="" id="output" class="column col">
+            <div id="output" class="column col">
+                <div class="card mt-2">
+                    <div class="card-header">Input Result</div>
+                    <div class="card-body">
+                        <p>Machine Type: <span id="input-type"><%= machineType ? machineType : "" %></span></p>
+                        <p>Cache Miss Algorithm: <span id="input-miss"><%= cacheMiss ? cacheMiss : "" %></span></p>
+                        <p>Block Size: <span id="input-block"><%= blockInput ? blockInput : "" %></span></p>
+                        <p>Main Memory Size: <span id="input-mm"><%= mmInput ? mmInput : "" %></span></p>
+                        <p>Cache Size: <span id="input-cache"><%= cacheInput ? cacheInput : "" %></span></p>
+                        <p>Read Sequence: <span id="input-read"><%= readInput ? readInput : "" %></span></p>
+                    </div>
+                </div>
                 <% if (result) { %>
 
 
