@@ -1,3 +1,5 @@
+const { cache } = require("ejs");
+
 /*  Used to convert cacheMemory/mainMemory to blocks when input is in words -> (Assuming Block Size is also in words)   */
 function convertToBlocks(blockSize, words) {
     return Math.floor(words / blockSize);
@@ -82,21 +84,40 @@ function parseInput(input, hexadec) {
     return parsedInput; 
 }
 
-/**
- * 0
- * L1,20
- *    1,4
- *    7
- *    L2,10
- *       9,11
- *    L2
- *    15,19
- * L1
- * 20
- */
-const parseInputBlock = readSequence => {
+function getMinScoreIndex (cacheSnapshot) {
+    let minIndex = 0
+    let minScore = Number.MAX_SAFE_INTEGER
+
+    for (let i = 0; i < cacheSnapshot.length; i++) {
+        if (cacheSnapshot[i].score < minScore) {
+            minIndex = i
+            minScore = cacheSnapshot[i].score
+        }
+    }
+
+    return minIndex
+}
+
+function getCacheHitIndex (cacheSnapshot, content) {
+    for (let i = 0; i < cacheSnapshot.length; i++) {
+        if (cacheSnapshot[i].content === content) {
+            return i
+        }
+    }
+
+    return -1
+}
+
+const getResultBlock = (data) => {
+    let {
+        readSequence,
+        cacheSnapshot,
+        currentScore,
+        cacheHit,
+        cacheMiss
+    } = data
+
     let splitSequence = Array.isArray(readSequence) ? readSequence : readSequence.split('\r\n')
-    let instructions = []
 
     for (let i = 0; i < splitSequence.length; i++) {
         
@@ -113,15 +134,23 @@ const parseInputBlock = readSequence => {
             let loopCount = currentIns[1]
             let startIndex = i
             let endIndex = splitSequence.indexOf(loopName, startIndex + 1)
-            let innerInstructions = parseInputBlock(splitSequence.slice(startIndex + 1, endIndex))
-            
-            console.log(innerInstructions)
-        
-            instructions.push({
-                instructionType: "LOOP",
-                loopCount: loopCount,
-                innerInstructions: innerInstructions,
-            })
+
+            let innerData = {
+                readSequence: splitSequence.slice(startIndex + 1, endIndex),
+                cacheSnapshot: cacheSnapshot,
+                currentScore: currentScore
+            }
+
+            for (let j = 0; j < loopCount; j++) {
+                let result = parseInputBlock(innerData)
+                innerData = {
+                    readSequence: splitSequence.slice(startIndex + 1, endIndex),
+                    cacheSnapshot: result.cacheSnapshot,
+                    currentScore: result.currentScore,
+                    cacheHit: result.cacheHit,
+                    cacheMiss: result.cacheMiss
+                }
+            }
 
             i += (endIndex - startIndex)
 
@@ -130,22 +159,52 @@ const parseInputBlock = readSequence => {
 
             let startBlock = currentIns[0]
             let endBlock = currentIns[1]
-            
-            instructions.push({
-                instructionType: "CONSECUTIVE",
-                startBlock: parseInt(startBlock),
-                endBlock: parseInt(endBlock)
-            })
+
+            startBlock = parseInt(startBlock)
+            endBlock = parseInt(endBlock)
+
+            let minIndex
+            let cacheHitIndex
+            for (let i = startBlock; i <= endBlock; i++) {
+                cacheHitIndex = getCacheHitIndex(cacheSnapshot, i)
+                if (cacheHitIndex === -1) {
+                    minIndex = getMinScoreIndex(cacheSnapshot)
+                    cacheSnapshot[minIndex] = {
+                        content: i,
+                        score: currentScore + 1
+                    }
+                    cacheMiss++
+                } else {
+                    cacheSnapshot[cacheHitIndex].score = currentScore + 1
+                    cacheHit++
+                }
+                currentScore++
+            }
         } else {
-            instructions.push({
-                instructionType: "SINGLE",
-                block: parseInt(currentIns)
-            })
+            let cacheHitIndex = getCacheHitIndex(cacheSnapshot, parseInt(currentIns))
+
+            if (cacheHitIndex === -1) {
+                let minIndex = getMinScoreIndex(cacheSnapshot)
+                cacheSnapshot[minIndex] = {
+                    content: parseInt(currentIns),
+                    score: currentScore + 1
+                }
+                cacheMiss++
+            } else {
+                cacheSnapshot[cacheHitIndex].score = currentScore + 1
+                cacheHit++
+            }
+            currentScore++
         }
 
     }
 
-    return instructions
+    return {
+        cacheSnapshot: cacheSnapshot,
+        currentScore: currentScore,
+        cacheHit: cacheHit,
+        cacheMiss: cacheMiss
+    }
 }
 
 const parseInputAddress = (readSequence, blockSize) => {
@@ -157,27 +216,30 @@ const parseInputAddress = (readSequence, blockSize) => {
 }
 
 module.exports = {
-    /*  Simulates the FA / LRU cache replacement algorithm  */
-    // simulate: (blockSize, cacheMemorySize, parsedInput, hexadec, steps) => {
-    //     var cacheAccess = 1;
-    //     var memoryAccess = 10;
-    //     var hits = 0; 
-    //     var misses = 0; 
-    //     var sum = [];
-    //     var lowestSum = 0;
-    //     var lastStatus = "N/A";
-    //     var averageAccess = 0;
-    //     var totalAccess = 0; 
-    //     var cacheMemory = [];
-    //     var stepsDone = 0;
-    // },
     simulate: data => {
         let blockSize = data.blockSize
-        let mmSize = data.mmType !== "blocks" ? convertToBlocks(blockSize, data.mmSize) : data.mmSize
-        let cacheSize = data.mmType !== "blocks" ? convertToBlocks(blockSize, data.cacheSize) : data.cacheSize
+        let mmSize = data.mmType !== "blocks" ? convertToBlocks(parseInt(blockSize), parseInt(data.mmSize)) : parseInt(data.mmSize)
+        let cacheSize = data.mmType !== "blocks" ? convertToBlocks(parseInt(blockSize), parseInt(data.cacheSize)) : parseInt(data.cacheSize)
 
-        let parsedReadSeq = data.readType === "blocks" ? parseInputBlock(data.readSeq) : parseInputAddress(data.readSeq)
-        console.log(parsedReadSeq)
+        let blockHolder = {
+            content: null,
+            score: 0
+        }
+        let cacheSnapshot = Array(cacheSize).fill(blockHolder)
+        let currentScore = 0
+        let cacheHit = 0
+        let cacheMiss = 0
+
+        let dataInput = {
+            readSequence: data.readSeq,
+            cacheSnapshot: cacheSnapshot,
+            currentScore: currentScore,
+            cacheHit: cacheHit,
+            cacheMiss: cacheMiss
+        }
+
+        let dataOutput = data.readType === "blocks" ? getResultBlock(dataInput) : parseInputAddress(data.readSeq)
+        console.log(dataOutput)
 
     },
 
