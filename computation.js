@@ -33,6 +33,11 @@ function checkCache(cache, inputData) {
     return -1; 
 }
 
+/*    Check if power of Two    */
+function checkPowerofTwo(n) {
+    return n && (n & (n - 1)) === 0;
+}
+
 /*  Parses the sequence and converts loops to singleton values  */
 function parseInput(input, hexadec) {
     var parsedInput = [];
@@ -77,25 +82,78 @@ function parseInput(input, hexadec) {
     return parsedInput; 
 }
 
+/**
+ * 0
+ * L1,20
+ *    1,4
+ *    7
+ *    L2,10
+ *       9,11
+ *    L2
+ *    15,19
+ * L1
+ * 20
+ */
 const parseInputBlock = readSequence => {
+    let splitSequence = Array.isArray(readSequence) ? readSequence : readSequence.split('\r\n')
+    let instructions = []
+
+    for (let i = 0; i < splitSequence.length; i++) {
+        
+        let currentIns = splitSequence[i];
+        let toAdd
+
+        if (currentIns.includes('L')) {
+            currentIns = currentIns.split(',')
+
+            if (typeof currentIns[1] === "undefined")
+                continue
+            
+            let loopName = currentIns[0]
+            let loopCount = currentIns[1]
+            let startIndex = i
+            let endIndex = splitSequence.indexOf(loopName, startIndex + 1)
+            let innerInstructions = parseInputBlock(splitSequence.slice(startIndex + 1, endIndex))
+            
+            console.log(innerInstructions)
+        
+            instructions.push({
+                instructionType: "LOOP",
+                loopCount: loopCount,
+                innerInstructions: innerInstructions,
+            })
+
+            i += (endIndex - startIndex)
+
+        } else if (currentIns.includes(',')) {
+            currentIns = currentIns.split(',')
+
+            let startBlock = currentIns[0]
+            let endBlock = currentIns[1]
+            
+            instructions.push({
+                instructionType: "CONSECUTIVE",
+                startBlock: parseInt(startBlock),
+                endBlock: parseInt(endBlock)
+            })
+        } else {
+            instructions.push({
+                instructionType: "SINGLE",
+                block: parseInt(currentIns)
+            })
+        }
+
+    }
+
+    return instructions
+}
+
+const parseInputAddress = (readSequence, blockSize) => {
     let splitSequence = readSequence.split('\r\n')
 
     //TODO: Manipulate loops
 
     return splitSequence
-}
-
-const parseInputAddress = readSequence => {
-    let splitSequence = readSequence.split('\r\n')
-
-    //TODO: Manipulate loops
-
-    return splitSequence
-}
-
-/*    Check if power of Two    */
-function checkPowerofTwo(n) {
-    return n && (n & (n - 1)) === 0;
 }
 
 module.exports = {
@@ -119,7 +177,7 @@ module.exports = {
         let cacheSize = data.mmType !== "blocks" ? convertToBlocks(blockSize, data.cacheSize) : data.cacheSize
 
         let parsedReadSeq = data.readType === "blocks" ? parseInputBlock(data.readSeq) : parseInputAddress(data.readSeq)
-
+        console.log(parsedReadSeq)
 
     },
 

@@ -40,22 +40,22 @@ module.exports = {
 
         if (req.body.config1 == "word") {
             data.machineType = "Word Addressable";
-            console.log(data.machineType);
+            //console.log(data.machineType);
         } else {
             data.machineType = "Byte Addressable";
-            console.log(data.machineType);
+            //console.log(data.machineType);
         }
 
         if (req.body.config2 == "nonload") {
             data.cacheMiss = "Non Load-Through";
-            console.log(data.cacheMiss);
+            //console.log(data.cacheMiss);
         } else {
             data.cacheMiss = "Load-Through";
-            console.log(data.cacheMiss);
+            //console.log(data.cacheMiss);
         }
         
         data.blockSize = req.body.blockSize;
-        console.log("Block size: " + data.blockSize + " Words/Bytes")
+        //console.log("Block size: " + data.blockSize + " Words/Bytes")
         if (data.machineType == "Word Addressable") {
             data.blockInput = data.blockSize + " Word(s)";
         } else {
@@ -65,11 +65,11 @@ module.exports = {
         data.mmType = req.body.config3
         if (data.mmType == "blocks") {
             data.mmSize = req.body.mmSizeBlocks;
-            console.log("Main Memory size: " + data.mmSize + " Blocks")
+            //console.log("Main Memory size: " + data.mmSize + " Blocks")
             data.mmInput = data.mmSize + " Block(s)";
         } else {
             data.mmSize = req.body.mmSizeWords;
-            console.log("Main Memory size: " + data.mmSize + " Words/Bytes")
+            //console.log("Main Memory size: " + data.mmSize + " Words/Bytes")
             if (data.machineType == "Word Addressable") {
                 data.mmInput = data.mmSize + " Word(s)";
             } else {
@@ -80,11 +80,11 @@ module.exports = {
         data.cacheType = req.body.config4
         if (data.cacheType == "blocks") {
             data.cacheSize = req.body.cacheSizeBlocks;
-            console.log("Cache Memory size: " + data.cacheSize + " Blocks")
+            //console.log("Cache Memory size: " + data.cacheSize + " Blocks")
             data.cacheInput = data.cacheSize + " Block(s)";
         } else {
             data.cacheSize = req.body.cacheSizeWords;
-            console.log("Cache Memory size: " + data.cacheSize + " Words/Bytes")
+            //console.log("Cache Memory size: " + data.cacheSize + " Words/Bytes")
             if (data.machineType == "Word Addressable") {
                 data.cacheInput = data.cacheSize + " Word(s)";
             } else {
@@ -95,11 +95,11 @@ module.exports = {
         data.readType = req.body.config5
         if (data.readType == "blocks") {
             data.readSeq = req.body.readBlocks;
-            console.log("Read Sequence: Blocks - " + data.readSeq)
+            //console.log("Read Sequence: Blocks - " + data.readSeq)
             data.readInput = "Block - " + data.readSeq;
         } else {
             data.readSeq = req.body.readAddress;
-            console.log("Read Sequence: Address - " + data.readSeq)
+            //console.log("Read Sequence: Address - " + data.readSeq)
             data.readInput = "Address - " + data.readSeq;
         }
 
