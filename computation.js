@@ -138,11 +138,13 @@ const getResultBlock = (data) => {
             let innerData = {
                 readSequence: splitSequence.slice(startIndex + 1, endIndex),
                 cacheSnapshot: cacheSnapshot,
-                currentScore: currentScore
+                currentScore: currentScore,
+                cacheHit: cacheHit,
+                cacheMiss: cacheMiss
             }
 
             for (let j = 0; j < loopCount; j++) {
-                let result = parseInputBlock(innerData)
+                let result = getResultBlock(innerData)
                 innerData = {
                     readSequence: splitSequence.slice(startIndex + 1, endIndex),
                     cacheSnapshot: result.cacheSnapshot,
@@ -150,6 +152,9 @@ const getResultBlock = (data) => {
                     cacheHit: result.cacheHit,
                     cacheMiss: result.cacheMiss
                 }
+                currentScore = result.currentScore
+                cacheHit = result.cacheHit
+                cacheMiss = result.cacheMiss
             }
 
             i += (endIndex - startIndex)
@@ -178,6 +183,8 @@ const getResultBlock = (data) => {
                     cacheSnapshot[cacheHitIndex].score = currentScore + 1
                     cacheHit++
                 }
+                console.log(cacheSnapshot)
+                console.log("")
                 currentScore++
             }
         } else {
@@ -194,6 +201,8 @@ const getResultBlock = (data) => {
                 cacheSnapshot[cacheHitIndex].score = currentScore + 1
                 cacheHit++
             }
+            console.log(cacheSnapshot)
+            console.log("")
             currentScore++
         }
 
