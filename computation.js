@@ -116,13 +116,11 @@ const getResultBlock = (data) => {
         cacheHit,
         cacheMiss
     } = data
-
     let splitSequence = Array.isArray(readSequence) ? readSequence : readSequence.split('\r\n')
 
     for (let i = 0; i < splitSequence.length; i++) {
         
         let currentIns = splitSequence[i];
-        let toAdd
 
         if (currentIns.includes('L')) {
             currentIns = currentIns.split(',')
@@ -162,11 +160,8 @@ const getResultBlock = (data) => {
         } else if (currentIns.includes(',')) {
             currentIns = currentIns.split(',')
 
-            let startBlock = currentIns[0]
-            let endBlock = currentIns[1]
-
-            startBlock = parseInt(startBlock)
-            endBlock = parseInt(endBlock)
+            let startBlock = parseInt(currentIns[0])
+            let endBlock = parseInt(currentIns[1])
 
             let minIndex
             let cacheHitIndex
@@ -183,7 +178,7 @@ const getResultBlock = (data) => {
                     cacheSnapshot[cacheHitIndex].score = currentScore + 1
                     cacheHit++
                 }
-                console.log(cacheSnapshot)
+                // console.log(cacheSnapshot)
                 console.log("")
                 currentScore++
             }
@@ -201,7 +196,7 @@ const getResultBlock = (data) => {
                 cacheSnapshot[cacheHitIndex].score = currentScore + 1
                 cacheHit++
             }
-            console.log(cacheSnapshot)
+            // console.log(cacheSnapshot)
             console.log("")
             currentScore++
         }
@@ -216,12 +211,116 @@ const getResultBlock = (data) => {
     }
 }
 
-const parseInputAddress = (readSequence, blockSize) => {
+const getResultAddress = (data, blockSizeParam) => {
+    let {
+        readSequence,
+        cacheSnapshot,
+        currentScore,
+        cacheHit,
+        cacheMiss
+    } = data
+    let blockSize = blockSizeParam
     let splitSequence = readSequence.split('\r\n')
+    let convertedSequence = []
 
-    //TODO: Manipulate loops
+    let currentBlock = -1
+    let currentUpperAddress = -1
 
-    return splitSequence
+    //convert addresses to blocks
+    for (let i = 0; i < splitSequence.length; i++) {
+
+        let currentIns = splitSequence[i]
+
+        if (currentIns.includes('L')) {
+            convertedSequence.push(currentIns)
+
+            currentBlock = -1
+            currentUpperAddress = -1
+        } else if (currentIns.includes(',')) {
+            currentIns = currentIns.split(',')
+
+            let startAddress = parseInt(currentIns[0])
+            let endAddress = parseInt(currentIns[1])
+
+            let startBlock = convertToBlocks(blockSize, startAddress)
+            let endBlock = convertToBlocks(blockSize, endAddress)
+
+            if (currentUpperAddress === -1 && currentBlock === -1 || currentUpperAddress >= startAddress) {
+                convertedSequence.push(`${startBlock},${endBlock}`)
+
+                currentUpperAddress = endAddress
+                currentBlock = endBlock
+            } else if (currentUpperAddress < startAddress) {
+                let startBlock = convertToBlocks(blockSize, startAddress)
+                let endBlock = convertToBlocks(blockSize, endAddress)
+
+                if (currentBlock !== startBlock) {
+                    /**
+                     * 1,122
+                     * 256,257
+                     */
+                    convertedSequence.push(`${startBlock},${endBlock}`)
+
+                    currentUpperAddress = endAddress
+                    currentBlock = endBlock
+                } else if (currentBlock !== endBlock) {
+                    /**
+                     * 1,122
+                     * 123,257
+                     */
+                    startBlock++
+
+                    convertedSequence.push(`${startBlock},${endBlock}`)
+                    currentUpperAddress = endAddress
+                    currentBlock = endBlock
+                } else if (currentBlock === endBlock) {
+                    /**
+                     * 1,122
+                     * 123,127
+                     */
+                    currentUpperAddress = endAddress
+                }
+            }
+        } else {
+            let address = parseInt(currentIns)
+            let block = convertToBlocks(blockSize, address)
+
+            if (currentUpperAddress === -1 && currentBlock === -1 || currentUpperAddress >= address) {
+                convertedSequence.push(`${block}`)
+                
+                currentUpperAddress = address
+                currentBlock = block
+            } else if (currentUpperAddress < address) {
+                if (currentBlock !== block) {
+                    /**
+                     * 1,122
+                     * 256
+                     */
+                    convertedSequence.push(`${block}`)
+
+                    currentUpperAddress = address
+                    currentBlock = block
+                } else if (currentBlock === block) {
+                    /**
+                     * 1,122
+                     * 123
+                     */
+                    currentUpperAddress = address
+                }
+            }            
+        }
+
+    }
+
+    let dataInput = {
+        readSequence: convertedSequence,
+        cacheSnapshot: cacheSnapshot,
+        currentScore: currentScore,
+        cacheHit: cacheHit,
+        cacheMiss: cacheMiss
+    }
+
+    return getResultBlock(dataInput)
 }
 
 module.exports = {
@@ -247,7 +346,7 @@ module.exports = {
             cacheMiss: cacheMiss
         }
 
-        let dataOutput = data.readType === "blocks" ? getResultBlock(dataInput) : parseInputAddress(data.readSeq)
+        let dataOutput = data.readType === "blocks" ? getResultBlock(dataInput) : getResultAddress(dataInput, blockSize)
         console.log(dataOutput)
 
     },
