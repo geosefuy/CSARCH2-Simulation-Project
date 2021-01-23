@@ -40,14 +40,14 @@ Continuous blocks / addresses:
 Looped blocks / addresses:
 ```
 L1,10     // syntax: loop name (should start with uppercase L),number of iterations
-1,3       // syntax: any singleton / continuous sequence
+1,3       // syntax: any number of singleton / continuous sequence
 L1        // syntax: loop name
 ```
 
 Nest-looped blocks / addresses
 ```
 L1,10     // syntax: loop name (should start with uppercase L),number of iterations
-1,3       // syntax: any singleton / continuous sequence
+1,3       // syntax: any number of singleton / continuous sequence
 L2, 20    
 4
 5,7
@@ -68,4 +68,21 @@ L2
 512,1279
 L1
 1280,1535
+```
+
+*Modified #6 - This will result in the same output*
+```
+0,126
+127
+L1,10
+128,255
+L2,20
+256,383
+384
+385,511
+L2
+512,1279
+L1
+1280,1407
+1408,1535
 ```
