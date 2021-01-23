@@ -178,8 +178,6 @@ const getResultBlock = (data) => {
                     cacheSnapshot[cacheHitIndex].score = currentScore + 1
                     cacheHit++
                 }
-                // console.log(cacheSnapshot)
-                console.log("")
                 currentScore++
             }
         } else {
@@ -196,8 +194,6 @@ const getResultBlock = (data) => {
                 cacheSnapshot[cacheHitIndex].score = currentScore + 1
                 cacheHit++
             }
-            // console.log(cacheSnapshot)
-            console.log("")
             currentScore++
         }
 
