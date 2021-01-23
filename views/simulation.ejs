@@ -301,6 +301,16 @@
                                         <input type="hidden" id="config5" name="config5" value="blocks">
                                     </div>
                                 </fieldset>
+                                <fieldset id="read-seq-group" class="form-group mt-2 ml-2">
+                                    <legend id="read-seq-header" class="col-form-label pt-0">Cache Access Time (in ns)</legend>
+                                    <div>
+                                        <input type="number" class="form-control" id="cache-time" name="cacheTime" min="1">
+                                    </div>
+                                    <legend id="read-seq-header" class="col-form-label mt-2 ml-2">Memory Access Time (in ns)</legend>
+                                    <div>
+                                        <input type="number" class="form-control" id="memory-time" name="memoryTime" min="1">
+                                    </div>
+                                </fieldset>
                             </div>
                         </div>
                     <button id="submit-input" type="submit" class="btn mt-4 btn btn-block btn-success">Submit</button>
@@ -316,6 +326,8 @@
                         <p>Block Size: <span id="input-block"><%= blockInput ? blockInput : "" %></span></p>
                         <p>Main Memory Size: <span id="input-mm"><%= mmInput ? mmInput : "" %></span></p>
                         <p>Cache Size: <span id="input-cache"><%= cacheInput ? cacheInput : "" %></span></p>
+                        <p>Cache Access Time: <span id="input-cache-time"><%= cacheTime ? cacheTime : "" %></span></p>
+                        <p>Memory Access Time: <span id="input-memory-time"><%= memoryTime ? memoryTime : "" %></span></p>
                         <p>Read Sequence: <span id="input-read"><%= readInput ? readInput : "" %></span></p>
                     </div>
                 </div>

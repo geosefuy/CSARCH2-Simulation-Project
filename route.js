@@ -13,6 +13,8 @@ module.exports = {
             mmInput: false,
             cacheInput: false,
             readInput: false,
+            cacheTime: false,
+            memoryTime: false,
         });
     },
     calculate: (req, res) => {
@@ -34,7 +36,9 @@ module.exports = {
             cacheInput: null,
             readSeq: null,
             readType: null,
-            readInput: null
+            readInput: null,
+            cacheTime: null,
+            memoryTime: null,
         }
         let result
 
@@ -103,6 +107,9 @@ module.exports = {
             data.readInput = "Address - " + data.readSeq;
         }
 
+        data.cacheTime = req.body.cacheTime;
+        data.memoryTime = req.body.memoryTime;
+
         simulate(data)
         
         res.render('simulation.ejs', { // Pass data to front end
@@ -113,6 +120,8 @@ module.exports = {
             mmInput: data.mmInput,
             cacheInput: data.cacheInput,
             readInput: data.readInput,
+            cacheTime: data.cacheTime,
+            memoryTime: data.memoryTime,
         });
     },
 }
