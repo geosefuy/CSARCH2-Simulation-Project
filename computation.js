@@ -347,6 +347,52 @@ function getAveAccessTime(data){
 }
 
 module.exports = {
+    /*  Used to convert cacheMemory/mainMemory to blocks when input is in words -> (Assuming Block Size is also in words)   */
+    convertToBlocks: (blockSize, words) => {
+        return Math.floor(words / blockSize);
+    },
+
+    /*  Checks if token is valid in numeric or in hex (If it is specified) -> (With the aid of RegEx)   */
+    checkToken: (token, hexadec) => {
+        if (hexadec) {
+            return Boolean(token.match(/^[0-9a-f]+$/i)) || Boolean(token.match(/^[0-9a-f]+L[0-9a-f]+L[1-9]+[0-9]*/i));
+        } 
+        else {
+            return Boolean(token.match(/^[0-9]+$/i)) || Boolean(token.match(/^[0-9]+L[0-9]+L[1-9]+[0-9]*/i)); 
+        }
+    },
+
+    /*  Checks if the input is within the range of the declared main memory size -> (In terms of block).   */
+    checkRange: (mainMemorySize, parsedInput) => {
+        for (let i = 0; i < parsedInput.length; i++) {
+            if (parsedInput[i] >= mainMemorySize) {
+                return false; 
+            }
+        }
+        return true; 
+    },
+
+    /*  Checks if the input data is in any of the cache blocks  */
+    checkCache: (cache, inputData) => {
+        for(let i = 0; i < cache.length; i++) {
+            if (cache[i].data == inputData) {
+                return i; 
+            }
+        }
+        return -1; 
+    },
+
+    /*    Check if power of Two    */
+    checkPowerofTwo: (n) => {
+        return n && (n & (n - 1)) === 0;
+    },
+
+    isNumeric: (str) => {
+        if (typeof str != "string") return false // we only process strings!  
+        return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+               !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+    },
+    
     simulate: data => {
         let blockSize = data.blockSize
         let mmSize = data.mmType !== "blocks" ? convertToBlocks(parseInt(blockSize), parseInt(data.mmSize)) : parseInt(data.mmSize)
