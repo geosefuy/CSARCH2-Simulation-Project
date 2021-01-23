@@ -39,6 +39,7 @@ module.exports = {
             readInput: null,
             cacheTime: null,
             memoryTime: null,
+            loadType: req.body.config2
         }
         let result
 

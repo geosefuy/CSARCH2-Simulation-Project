@@ -327,22 +327,33 @@ function getAveAccessTime(data){
         blockSize,
         cacheTime,
         memoryTime,
+        loadType,
         currentScore,
         cacheHit,
         cacheMiss
     } = data;
 
+    let aveTime;
+    let missPenalty;
+
     nBlockSize = parseInt(blockSize);
     nMemoryTime = parseInt(memoryTime);
     nCacheTime = parseInt(cacheTime);
 
-    // Calculation
+    /* Calculations */
     let hitRate = cacheHit / currentScore;
     let missRate = cacheMiss / currentScore;
 
-    missPenalty = nCacheTime + (nBlockSize*nMemoryTime) + nCacheTime;
-    aveTime = (hitRate*nCacheTime) + (missRate*missPenalty); 
+    // Non-Load Thru
+    if(loadType == "nonload") {
+        missPenalty = nCacheTime + (nBlockSize*nMemoryTime) + nCacheTime;
+    
+    // Load Thru
+    } else {
+        missPenalty = nCacheTime + nMemoryTime;
+    }
 
+    aveTime = (hitRate*nCacheTime) + (missRate*missPenalty);
     return aveTime;
 }
 
@@ -373,16 +384,17 @@ module.exports = {
         console.log(dataOutput)
 
         // Getting Average Access Time
-        let aveParams = {
+        let accessParams = {
             blockSize: blockSize,
             cacheTime: data.cacheTime,
             memoryTime: data.memoryTime,
+            loadType: data.loadType,
             currentScore: dataOutput.currentScore,
             cacheHit: dataOutput.cacheHit,
             cacheMiss: dataOutput.cacheMiss
         }
 
-        aveTime = getAveAccessTime(aveParams);
+        aveTime = getAveAccessTime(accessParams);
         console.log("Average Access Time: " + aveTime);
     },
 
