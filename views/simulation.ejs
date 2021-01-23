@@ -33,6 +33,10 @@
         .card-body{
             color:  #3a3a3a;
         }
+        .text-danger{
+            font-size: 14px;
+            margin-left: 2px;
+        }
     </style>
     <script>
         $(document).ready(function(){
@@ -181,12 +185,14 @@
                                 <label id="block-size-group__BV_label_" for="block-size" class="col-form-label pt-0">Block Size</label>
                                 <div>
                                     <div role="group" class="input-group">
-                                        <input id="block-size" type="number" placeholder="Enter block size" required class="form-control" name="blockSize">
+                                        <input id="block-size" type="number" placeholder="Enter block size" required class="form-control" name="blockSize" min="1">
                                         <div class="input-group-append">
                                             <div class="input-group-text" id="block-size-header">words</div>
                                         </div>
                                     </div>
-                                    <div class="invalid-feedback"> Your block size should be a power of two. </div>
+                                    <% if (blockError) { %>
+                                    <div class="text-danger"> Your block size should be a power of two. </div>
+                                    <% } %>
                                 </div>
                             </div>
                         </div>
@@ -207,24 +213,28 @@
                                     <label id="mm-size-group__BV_label_" for="mm-size" class="col-form-label pt-0">Main Memory Size (in blocks)</label>
                                     <div>
                                         <div role="group" class="input-group">
-                                            <input id="mm-size-blocks" type="number" placeholder="Enter main memory size" required class="form-control" name="mmSizeBlocks">
+                                            <input id="mm-size-blocks" type="number" placeholder="Enter main memory size" required class="form-control" name="mmSizeBlocks" min="1">
                                             <div class="input-group-append">
                                                 <div class="input-group-text">blocks</div>
                                             </div>
                                         </div>
-                                        <div class="invalid-feedback"> Your main memory size should be a power of two. </div>
+                                        <% if (mmError) { %>
+                                        <div class="text-danger"> Your main memory size should be a power of two. </div>
+                                        <% } %>
                                     </div>
                                 </div>
                                 <div id="mm-size-group2" role="group" class="form-group mt-2 ml-2">
                                     <label id="mm-label" for="mm-size" class="col-form-label pt-0">Main Memory Size (in words)</label>
                                     <div>
                                         <div role="group" class="input-group">
-                                            <input id="mm-size-words" type="number" placeholder="Enter main memory size" required class="form-control" name="mmSizeWords">
+                                            <input id="mm-size-words" type="number" placeholder="Enter main memory size" required class="form-control" name="mmSizeWords" min="1">
                                             <div class="input-group-append">
                                                 <div class="input-group-text" id="mm-size-header">words</div>
                                             </div>
                                         </div>
-                                        <div class="invalid-feedback"> Your main memory size should be a power of two. </div>
+                                        <% if (mmError) { %>
+                                        <div class="text-danger"> Your main memory size should be a power of two. </div>
+                                        <% } %>
                                     </div>
                                 </div>
                             </div>
@@ -245,24 +255,28 @@
                                     <label id="cache-size-group__BV_label_" for="cache-size" class="col-form-label pt-0">Cache Size (in blocks)</label>
                                     <div>
                                         <div role="group" class="input-group">
-                                            <input id="cache-size-blocks" type="number" placeholder="Enter cache size" required class="form-control" name="cacheSizeBlocks">
+                                            <input id="cache-size-blocks" type="number" placeholder="Enter cache size" required class="form-control" name="cacheSizeBlocks" min="1">
                                             <div class="input-group-append">
                                                 <div class="input-group-text">blocks</div>
                                             </div>
                                         </div>
-                                        <div class="invalid-feedback"> Your cache size should be a power of two. </div>
+                                        <% if (cacheError) { %>
+                                        <div class="text-danger"> Your cache size should be a power of two. </div>
+                                        <% } %>
                                     </div>
                                 </div>
                                 <div id="cache-size-group2" role="group" class="form-group mt-2 ml-2">
                                     <label id="cache-label" for="cache-size" class="col-form-label pt-0">Cache Size (in words)</label>
                                     <div>
                                         <div role="group" class="input-group">
-                                            <input id="cache-size-words" type="number" placeholder="Enter cache size" required class="form-control" name="cacheSizeWords">
+                                            <input id="cache-size-words" type="number" placeholder="Enter cache size" required class="form-control" name="cacheSizeWords" min="1">
                                             <div class="input-group-append">
                                                 <div class="input-group-text" id="cache-size-header">words</div>
                                             </div>
                                         </div>
-                                        <div class="invalid-feedback"> Your cache size should be a power of two. </div>
+                                        <% if (cacheError) { %>
+                                        <div class="text-danger"> Your cache size should be a power of two. </div>
+                                        <% } %>
                                     </div>
                                 </div>
                             </div>
@@ -284,12 +298,18 @@
                                     <div>
                                         <textarea id="read-seq-blocks" placeholder="Enter block sequence to be read separated by newlines" required rows="10" class="form-control" name="readBlocks" style="resize: none;" wrap="soft"></textarea>
                                     </div>
+                                    <% if (seqError) { %>
+                                    <div class="text-danger">Invalid sequencing. Check the readme for details.</div>
+                                    <% } %>
                                 </div>
                                 <div id="read-seq-group2" role="group" class="form-group mt-2 ml-2">
                                     <label id="read-seq-address-group__BV_label_" for="read-seq-address" class="col-form-label pt-0">Read Sequence (address)</label>
                                     <div>
                                         <textarea id="read-seq-address" placeholder="Enter address sequence to be read separated by newlines" required rows="10" class="form-control" name="readAddress" style="resize: none;" wrap="soft"></textarea>
                                     </div>
+                                    <% if (seqError) { %>
+                                    <div class="text-danger">Invalid sequencing. Check the readme for details.</div>
+                                    <% } %>
                                 </div>
                             </div>
                             <div class="col">
@@ -304,11 +324,11 @@
                                 <fieldset id="read-seq-group" class="form-group mt-2 ml-2">
                                     <legend id="read-seq-header" class="col-form-label pt-0">Cache Access Time (in ns)</legend>
                                     <div>
-                                        <input type="number" class="form-control" id="cache-time" name="cacheTime" min="1">
+                                        <input type="number" class="form-control" id="cache-time" name="cacheTime" min="1" required>
                                     </div>
                                     <legend id="read-seq-header" class="col-form-label mt-2 ml-2">Memory Access Time (in ns)</legend>
                                     <div>
-                                        <input type="number" class="form-control" id="memory-time" name="memoryTime" min="1">
+                                        <input type="number" class="form-control" id="memory-time" name="memoryTime" min="1" required>
                                     </div>
                                 </fieldset>
                             </div>

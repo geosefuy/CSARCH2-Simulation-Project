@@ -1,5 +1,8 @@
 const {
     simulate,
+    checkPowerofTwo,
+    isNumeric,
+    
     textFile
 } = require("./computation")
 
@@ -15,6 +18,10 @@ module.exports = {
             readInput: false,
             cacheTime: false,
             memoryTime: false,
+            blockError: false,
+            mmError: false,
+            cacheError: false,
+            seqError: false,
         });
     },
     calculate: (req, res) => {
@@ -112,17 +119,109 @@ module.exports = {
         data.memoryTime = req.body.memoryTime;
 
         simulate(data)
+        let error = false;
+        let blockError = false;
+        let mmError = false;
+        let cacheError = false;
+        let seqError = false;
+        if (!checkPowerofTwo(parseInt(data.blockSize))){
+            error = true;
+            blockError = true;
+        }
+        if (!checkPowerofTwo(parseInt(data.mmSize))){
+            error = true;
+            mmError = true;
+        }
+        if (!checkPowerofTwo(parseInt(data.cacheSize))){
+            error = true;
+            cacheError = true;
+        }
+
+        let splitSequence = Array.isArray(data.readSeq) ? data.readSeq : data.readSeq.split('\r\n')
+
+        for (let i = 0; i < splitSequence.length; i++) {
         
-        res.render('simulation.ejs', { // Pass data to front end
-            result: true,
-            machineType: data.machineType,
-            cacheMiss: data.cacheMiss,
-            blockInput: data.blockInput,
-            mmInput: data.mmInput,
-            cacheInput: data.cacheInput,
-            readInput: data.readInput,
-            cacheTime: data.cacheTime,
-            memoryTime: data.memoryTime,
-        });
+            let currentIns = splitSequence[i];
+    
+            if (currentIns.includes('L')) {
+                currentIns = currentIns.split(',')
+                if (currentIns.length > 2){
+                    error = true;
+                    seqError = true;
+                }
+                else if (currentIns.length == 2){
+                    if (!isNumeric(currentIns[1].trim())){
+                        error = true;
+                        seqError = true;
+                    }
+                    if (!isNumeric(currentIns[0].substr(1).trim())){
+                        error = true;
+                        seqError = true;
+                    }
+                }
+                else{
+                    if (!isNumeric(currentIns[0].substr(1).trim())){
+                        error = true;
+                        seqError = true;
+                    }
+                }
+            } else if (currentIns.includes(',')) {
+                currentIns = currentIns.split(',')
+                if (currentIns.length > 2){
+                    error = true;
+                    seqError = true;
+                }
+                else{
+                    if (!isNumeric(currentIns[1].trim())){
+                        error = true;
+                        seqError = true;
+                    }
+                    if (!isNumeric(currentIns[0].trim())){
+                        error = true;
+                        seqError = true;
+                    }
+                }
+            } else {
+                if (!isNumeric(currentIns.trim())){
+                    error = true;
+                    seqError = true;
+                }
+            }
+        }
+        //L1, 2
+        // Check for overflow either in block or word
+
+        if (error)
+            res.render('simulation.ejs', { // Pass data to front end
+                result: false,
+                machineType: data.machineType,
+                cacheMiss: data.cacheMiss,
+                blockInput: data.blockInput,
+                mmInput: data.mmInput,
+                cacheInput: data.cacheInput,
+                readInput: data.readInput,
+                cacheTime: data.cacheTime,
+                memoryTime: data.memoryTime,
+                blockError: blockError,
+                mmError: mmError,
+                cacheError: cacheError,
+                seqError: seqError,
+            });
+        else
+            res.render('simulation.ejs', { // Pass data to front end
+                result: true,
+                machineType: data.machineType,
+                cacheMiss: data.cacheMiss,
+                blockInput: data.blockInput,
+                mmInput: data.mmInput,
+                cacheInput: data.cacheInput,
+                readInput: data.readInput,
+                cacheTime: data.cacheTime,
+                memoryTime: data.memoryTime,
+                blockError: false,
+                mmError: false,
+                cacheError: false,
+                seqError: false,
+            });
     },
 }
