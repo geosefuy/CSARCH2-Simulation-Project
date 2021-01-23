@@ -37,7 +37,7 @@ function checkCache(cache, inputData) {
 
 /*    Check if power of Two    */
 function checkPowerofTwo(n) {
-    return n && (n & (n - 1)) === 0;
+    return Boolean(n && (n & (n - 1)) === 0);
 }
 
 /*  Parses the sequence and converts loops to singleton values  */
@@ -319,6 +319,33 @@ const getResultAddress = (data, blockSizeParam) => {
     return getResultBlock(dataInput)
 }
 
+/* Calculate for the average access time */
+function getAveAccessTime(data){
+
+    // Initialization
+    let {
+        blockSize,
+        cacheTime,
+        memoryTime,
+        currentScore,
+        cacheHit,
+        cacheMiss
+    } = data;
+
+    nBlockSize = parseInt(blockSize);
+    nMemoryTime = parseInt(memoryTime);
+    nCacheTime = parseInt(cacheTime);
+
+    // Calculation
+    let hitRate = cacheHit / currentScore;
+    let missRate = cacheMiss / currentScore;
+
+    missPenalty = nCacheTime + (nBlockSize*nMemoryTime) + nCacheTime;
+    aveTime = (hitRate*nCacheTime) + (missRate*missPenalty); 
+
+    return aveTime;
+}
+
 module.exports = {
     simulate: data => {
         let blockSize = data.blockSize
@@ -345,6 +372,18 @@ module.exports = {
         let dataOutput = data.readType === "blocks" ? getResultBlock(dataInput) : getResultAddress(dataInput, blockSize)
         console.log(dataOutput)
 
+        // Getting Average Access Time
+        let aveParams = {
+            blockSize: blockSize,
+            cacheTime: data.cacheTime,
+            memoryTime: data.memoryTime,
+            currentScore: dataOutput.currentScore,
+            cacheHit: dataOutput.cacheHit,
+            cacheMiss: dataOutput.cacheMiss
+        }
+
+        aveTime = getAveAccessTime(aveParams);
+        console.log("Average Access Time: " + aveTime);
     },
 
     /*  Prepares the information of the text file   */
