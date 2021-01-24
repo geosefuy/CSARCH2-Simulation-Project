@@ -174,9 +174,37 @@
                 $("#read-seq-blocks").prop("required", false);
                 $("#read-seq-address").prop("required", true);
             })
-            $("#submit-input").on("click", function(){
-
-            })
+            $("#export").on("click", function () {
+                let result = <%-JSON.stringify(result)%>;
+                let data = "Cache Memory:\n";
+                result.cacheSnapshot.forEach((block, index) =>{
+                    data = data + "Block: " + index + " Score: " + block.score + " Data: " + block.content + "\n";
+                });
+                data = data + "\n";
+                data = data + "Cache Hit(s): " +  result.cacheHit + "\n";
+                data = data + "Cache Miss(es): " +  result.cacheMiss + "\n";
+                data = data + "Miss Penalty: " +  result.missPenalty + " ns\n";
+                data = data + "Average Access Time: " +  result.aveTime + " ns\n";
+                data = data + "Total Access Time: " +  result.totalTime + " ns\n";
+                console.log(result);
+                let filename = "output.txt";
+                let type = "text/plain";
+                var file = new Blob([data], {type: type});
+                if (window.navigator.msSaveOrOpenBlob) // IE10+
+                    window.navigator.msSaveOrOpenBlob(file, filename);
+                else { // Others
+                    let a = document.createElement("a")
+                    let url = URL.createObjectURL(file);
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(function() {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);  
+                    }, 0); 
+                }
+            });
         });
     </script>
 </head>
@@ -423,7 +451,7 @@
                             </table>
                         </div>
                         <div class="mb-3" style="text-align: right; margin-right: 5%;">
-                            <input type="button" class="btn btn-warning" id="export" value="Export to Text File" >
+                            <input type="button" class="btn btn-warning" id="export" value="Export to Text File">
                         </div>
                     </div>
                 <% } %>
