@@ -37,6 +37,18 @@
             font-size: 14px;
             margin-left: 2px;
         }
+        p{
+            line-height: 8px;
+        }
+        table{
+            table-layout: fixed;
+        }
+        #cache-output{
+            text-align: center;
+        }
+        #input-read{
+            white-space: pre-wrap;
+        }
     </style>
     <script>
         $(document).ready(function(){
@@ -54,7 +66,7 @@
                 $("#block-size-header").text("bytes");
                 $("#mm-label").text("Main Memory Size (in bytes)");
                 $("#mm-size-header").text("bytes");
-                $("#cache-label").text("Cache Memory Size (in bytes)");
+                $("#cache-label").text("Cache Size (in bytes)");
                 $("#cache-size-header").text("bytes");
                 $("#words-main").val("bytes");
                 $("#words-cache").val("bytes");
@@ -76,7 +88,7 @@
                 $("#block-size-header").text("words");
                 $("#mm-label").text("Main Memory Size (in words)");
                 $("#mm-size-header").text("words");
-                $("#cache-label").text("Cache Memory Size (in words)");
+                $("#cache-label").text("Cache Size (in words)");
                 $("#cache-size-header").text("words");
                 $("#words-main").val("words");
                 $("#words-cache").val("words");
@@ -171,7 +183,7 @@
 <body>
     <div id="wrapper" class="container-fluid">
         <div id="parent" class="row">
-            <div id="input" class="column col-7">
+            <div id="input" class="column col-6">
                 <h2 class="text-header">Input</h2>
                 <form class="" method="post" action="/calculate">
                     <div class="row">
@@ -324,12 +336,19 @@
                                 <fieldset id="read-seq-group" class="form-group mt-2 ml-2">
                                     <legend id="read-seq-header" class="col-form-label pt-0">Cache Access Time (in ns)</legend>
                                     <div>
-                                        <input type="number" class="form-control" id="cache-time" name="cacheTime" min="1" required>
+                                        <input type="number" class="form-control" id="cache-time" name="cacheTime" min="0" step="any" required>
                                     </div>
                                     <legend id="read-seq-header" class="col-form-label mt-2 ml-2">Memory Access Time (in ns)</legend>
                                     <div>
-                                        <input type="number" class="form-control" id="memory-time" name="memoryTime" min="1" required>
+                                        <input type="number" class="form-control" id="memory-time" name="memoryTime" min="0" step="any" required>
                                     </div>
+                                    <br>
+                                    <% if (timeError1) { %>
+                                    <div class="text-danger">Access times must be greater than 0.</div>
+                                    <% } %>
+                                    <% if (timeError2) { %>
+                                    <div class="text-danger">Memory access time must be greater than cache access time.</div>
+                                    <% } %>
                                 </fieldset>
                             </div>
                         </div>
@@ -341,20 +360,69 @@
                 <div class="card mt-2">
                     <div class="card-header">Input Result</div>
                     <div class="card-body">
-                        <p>Machine Type: <span id="input-type"><%= machineType ? machineType : "" %></span></p>
-                        <p>Cache Miss Algorithm: <span id="input-miss"><%= cacheMiss ? cacheMiss : "" %></span></p>
-                        <p>Block Size: <span id="input-block"><%= blockInput ? blockInput : "" %></span></p>
-                        <p>Main Memory Size: <span id="input-mm"><%= mmInput ? mmInput : "" %></span></p>
-                        <p>Cache Size: <span id="input-cache"><%= cacheInput ? cacheInput : "" %></span></p>
-                        <p>Cache Access Time: <span id="input-cache-time"><%= cacheTime ? cacheTime : "" %></span></p>
-                        <p>Memory Access Time: <span id="input-memory-time"><%= memoryTime ? memoryTime : "" %></span></p>
-                        <p>Read Sequence: <span id="input-read"><%= readInput ? readInput : "" %></span></p>
+                        <p><strong>Machine Type: </strong><span id="input-type"><%= machineType ? machineType : "" %></span></p>
+                        <p><strong>Cache Miss Algorithm: </strong><span id="input-miss"><%= cacheMiss ? cacheMiss : "" %></span></p>
+                        <p><strong>Block Size: </strong><span id="input-block"><%= blockInput ? blockInput : "" %></span></p>
+                        <p><strong>Main Memory Size: </strong><span id="input-mm"><%= mmInput ? mmInput : "" %></span></p>
+                        <p><strong>Cache Size: </strong><span id="input-cache"><%= cacheInput ? cacheInput : "" %></span></p>
+                        <p><strong>Cache Access Time: </strong><span id="input-cache-time"><%= cacheTime ? cacheTime : "" %></span></p>
+                        <p><strong>Memory Access Time: </strong><span id="input-memory-time"><%= memoryTime ? memoryTime : "" %></span></p>
+                        <p><strong>Read Sequence: </strong></p>
+                        <div id="input-read"><%= readInput ? readInput : "" %></div>
                     </div>
                 </div>
+                <br>
                 <% if (result) { %>
-
-                    hello
-
+                    <h2 class="text-header">Output</h2>
+                    <div class="card mt-2">
+                        <div class="card-header">Cache Memory</div>
+                        <div class="card-body" id="cache-output">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Cache Block #</th>
+                                        <th>Score</th>
+                                        <th>Data</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% result.cacheSnapshot.forEach((block, index)=> {  %>
+                                    <tr>
+                                    <td><%= index %></td>
+                                    <td><%= block.score %></td>
+                                    <td><%= block.content %></td>
+                                    </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                    <th scope="row">Cache Hit(s)</th>
+                                    <td><%= result.cacheMiss %></td>
+                                    </tr>
+                                    <tr>
+                                    <th scope="row">Cache Miss(es)</th>
+                                    <td><%= result.cacheMiss %></td>
+                                    </tr>
+                                    <tr>
+                                    <th scope="row">Miss Penalty</th>
+                                    <td><%= result.missPenalty %> ns</td>
+                                    </tr>
+                                    <tr>
+                                    <th scope="row">Average Access Time</th>
+                                    <td><%= result.aveTime %> ns</td>
+                                    </tr>
+                                    <tr>
+                                    <th scope="row">Total Access Time</th>
+                                    <td><%= result.totalTime %> ns</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 <% } %>
             </div>
         </div>

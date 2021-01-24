@@ -2,7 +2,7 @@ const {
     simulate,
     checkPowerofTwo,
     isNumeric,
-    
+    convertToBlocks,
     textFile
 } = require("./computation")
 
@@ -22,6 +22,8 @@ module.exports = {
             mmError: false,
             cacheError: false,
             seqError: false,
+            timeError1: false,
+            timeError2: false,
         });
     },
     calculate: (req, res) => {
@@ -108,22 +110,23 @@ module.exports = {
         if (data.readType == "blocks") {
             data.readSeq = req.body.readBlocks;
             //console.log("Read Sequence: Blocks - " + data.readSeq)
-            data.readInput = "Block - " + data.readSeq;
+            data.readInput = "Block\n" + data.readSeq;
         } else {
             data.readSeq = req.body.readAddress;
             //console.log("Read Sequence: Address - " + data.readSeq)
-            data.readInput = "Address - " + data.readSeq;
+            data.readInput = "Address\n" + data.readSeq;
         }
 
         data.cacheTime = req.body.cacheTime;
         data.memoryTime = req.body.memoryTime;
-
-        simulate(data)
+        let mmSize = data.mmType !== "blocks" ? convertToBlocks(parseInt(data.blockSize), parseInt(data.mmSize)) : parseInt(data.mmSize)
         let error = false;
         let blockError = false;
         let mmError = false;
         let cacheError = false;
         let seqError = false;
+        let timeError1 = false;
+        let timeError2 = false;
         if (!checkPowerofTwo(parseInt(data.blockSize))){
             error = true;
             blockError = true;
@@ -136,9 +139,17 @@ module.exports = {
             error = true;
             cacheError = true;
         }
+        if (parseFloat(data.cacheTime) == 0 || parseFloat(data.memoryTime) == 0){
+            error = true;
+            timeError1 = true;
+        }
+        if (parseFloat(data.memoryTime) <= parseFloat(data.cacheTime)){
+            error = true;
+            timeError2 = true;
+        }
 
         let splitSequence = Array.isArray(data.readSeq) ? data.readSeq : data.readSeq.split('\r\n')
-
+        let loopArray = [];
         for (let i = 0; i < splitSequence.length; i++) {
         
             let currentIns = splitSequence[i];
@@ -154,15 +165,33 @@ module.exports = {
                         error = true;
                         seqError = true;
                     }
-                    if (!isNumeric(currentIns[0].substr(1).trim())){
+                    else if (!isNumeric(currentIns[0].substr(1).trim())){
                         error = true;
                         seqError = true;
+                    }
+                    else{
+                        if (parseInt(currentIns[0].substr(1)) < 0 || parseInt(currentIns[1]) < 0){
+                            error = true;
+                            seqError = true;
+                        }
+                        loopArray.push(currentIns[0])
                     }
                 }
                 else{
                     if (!isNumeric(currentIns[0].substr(1).trim())){
                         error = true;
                         seqError = true;
+                    }
+                    if (loopArray.length == 0){
+                        error = true;
+                        seqError = true;
+                    }
+                    else{
+                        let currLoop = loopArray.pop();
+                        if (currentIns[0] != currLoop){
+                            error = true;
+                            seqError = true
+                        }
                     }
                 }
             } else if (currentIns.includes(',')) {
@@ -176,9 +205,29 @@ module.exports = {
                         error = true;
                         seqError = true;
                     }
-                    if (!isNumeric(currentIns[0].trim())){
+                    else if (!isNumeric(currentIns[0].trim())){
                         error = true;
                         seqError = true;
+                    }
+                    else{             
+                        if (parseInt(currentIns[0]) < 0 || parseInt(currentIns[1]) < 0 || parseInt(currentIns[0]) > parseInt(currentIns[1])){
+                            error = true;
+                            seqError = true;
+                        }
+                        if (data.readType == "blocks"){
+                            if (parseInt(currentIns[0]) >= mmSize || parseInt(currentIns[1]) >= mmSize){
+                                error = true;
+                                seqError = true;
+                            }
+                        }
+                        else{
+                            let currBlock1 = convertToBlocks(parseInt(data.blockSize), parseInt(currentIns[0]))
+                            let currBlock2 = convertToBlocks(parseInt(data.blockSize), parseInt(currentIns[1]))
+                            if (currBlock1 >= mmSize || currBlock2 >= mmSize){
+                                error = true;
+                                seqError = true;
+                            }
+                        }
                     }
                 }
             } else {
@@ -186,11 +235,33 @@ module.exports = {
                     error = true;
                     seqError = true;
                 }
+                else{
+                    if (parseInt(currentIns) < 0){
+                        error = true;
+                        seqError = true;
+                    }
+                    if (data.readType == "blocks"){
+                        if (parseInt(currentIns) >= mmSize){
+                            error = true;
+                            seqError = true;
+                        }
+                    }
+                    else{
+                        let currBlock = convertToBlocks(parseInt(data.blockSize), parseInt(currentIns))
+                        if (currBlock >= mmSize){
+                            error = true;
+                            seqError = true;
+                        }
+                    }
+                }
             }
         }
-        //L1, 2
+        if (loopArray.length > 0){
+            error = true;
+            seqError = true;
+        }
         // Check for overflow either in block or word
-
+        console.log(error)
         if (error)
             res.render('simulation.ejs', { // Pass data to front end
                 result: false,
@@ -206,10 +277,13 @@ module.exports = {
                 mmError: mmError,
                 cacheError: cacheError,
                 seqError: seqError,
+                timeError1: timeError1,
+                timeError2: timeError2,
             });
-        else
+        else{ 
+            result = simulate(data)
             res.render('simulation.ejs', { // Pass data to front end
-                result: true,
+                result: result,
                 machineType: data.machineType,
                 cacheMiss: data.cacheMiss,
                 blockInput: data.blockInput,
@@ -222,6 +296,10 @@ module.exports = {
                 mmError: false,
                 cacheError: false,
                 seqError: false,
+                timeError1: false,
+                timeError2: false,
             });
+        }
+            
     },
 }

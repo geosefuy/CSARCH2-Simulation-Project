@@ -337,8 +337,8 @@ function getAccessTime(data){
     let missPenalty;
 
     nBlockSize = parseInt(blockSize);
-    nMemoryTime = parseInt(memoryTime);
-    nCacheTime = parseInt(cacheTime);
+    nMemoryTime = parseFloat(memoryTime);
+    nCacheTime = parseFloat(cacheTime);
 
     /* Calculations */
     let hitRate = cacheHit / currentScore;
@@ -357,7 +357,7 @@ function getAccessTime(data){
     aveTime = (hitRate*nCacheTime) + (missRate*missPenalty);
     totalTime += (cacheHit*nBlockSize*nCacheTime) + (cacheMiss*nCacheTime);
 
-    return {aveTime, totalTime};
+    return {aveTime, missPenalty, totalTime};
 }
 
 
@@ -385,16 +385,6 @@ module.exports = {
             }
         }
         return true; 
-    },
-
-    /*  Checks if the input data is in any of the cache blocks  */
-    checkCache: (cache, inputData) => {
-        for(let i = 0; i < cache.length; i++) {
-            if (cache[i].data == inputData) {
-                return i; 
-            }
-        }
-        return -1; 
     },
 
     /*    Check if power of Two    */
@@ -431,7 +421,7 @@ module.exports = {
         }
 
         let dataOutput = data.readType === "blocks" ? getResultBlock(dataInput) : getResultAddress(dataInput, blockSize)
-        console.log(dataOutput)
+        // console.log(dataOutput)
 
         /** Getting Access Time */ 
         let accessParams = {
@@ -445,8 +435,13 @@ module.exports = {
         }
 
         accessTime = getAccessTime(accessParams);
-        console.log("Average Access Time: " + accessTime.aveTime);
-        console.log("Total Access Time: " + accessTime.totalTime);
+        // console.log("Average Access Time: " + accessTime.aveTime);
+        // console.log("Total Access Time: " + accessTime.totalTime);
+        dataOutput.aveTime = accessTime.aveTime;
+        dataOutput.missPenalty = accessTime.missPenalty;
+        dataOutput.totalTime = accessTime.totalTime;
+        console.log(dataOutput)
+        return dataOutput;
     },
 
     /*  Prepares the information of the text file   */
