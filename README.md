@@ -48,7 +48,7 @@ Nest-looped blocks / addresses
 ```
 L1,10     // syntax: loop name (should start with uppercase L),number of iterations
 1,3       // syntax: any number of singleton / continuous sequence
-L2, 20    
+L2,20    
 4
 5,7
 L2        // an inner loop should have its closing signal inside the outer loop
