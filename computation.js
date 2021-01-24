@@ -320,7 +320,7 @@ const getResultAddress = (data, blockSizeParam) => {
 }
 
 /* Calculate for the average access time */
-function getAveAccessTime(data){
+function getAccessTime(data){
 
     // Initialization
     let {
@@ -333,7 +333,7 @@ function getAveAccessTime(data){
         cacheMiss
     } = data;
 
-    let aveTime;
+    let aveTime, totalTime;
     let missPenalty;
 
     nBlockSize = parseInt(blockSize);
@@ -346,16 +346,20 @@ function getAveAccessTime(data){
 
     // Non-Load Thru
     if(loadType == "nonload") {
-        missPenalty = nCacheTime + (nBlockSize*nMemoryTime) + nCacheTime;
-    
+        missPenalty = nCacheTime + (nBlockSize*nMemoryTime) + nCacheTime; 
+        totalTime = cacheMiss*nBlockSize*(nCacheTime + nMemoryTime);
     // Load Thru
     } else {
         missPenalty = nCacheTime + nMemoryTime;
+        totalTime = cacheMiss*nBlockSize*nMemoryTime;
     }
 
     aveTime = (hitRate*nCacheTime) + (missRate*missPenalty);
-    return aveTime;
+    totalTime += (cacheHit*nBlockSize*nCacheTime) + (cacheMiss*nCacheTime);
+
+    return {aveTime, totalTime};
 }
+
 
 module.exports = {
     /*  Used to convert cacheMemory/mainMemory to blocks when input is in words -> (Assuming Block Size is also in words)   */
@@ -429,7 +433,7 @@ module.exports = {
         let dataOutput = data.readType === "blocks" ? getResultBlock(dataInput) : getResultAddress(dataInput, blockSize)
         console.log(dataOutput)
 
-        // Getting Average Access Time
+        /** Getting Access Time */ 
         let accessParams = {
             blockSize: blockSize,
             cacheTime: data.cacheTime,
@@ -440,8 +444,9 @@ module.exports = {
             cacheMiss: dataOutput.cacheMiss
         }
 
-        aveTime = getAveAccessTime(accessParams);
-        console.log("Average Access Time: " + aveTime);
+        accessTime = getAccessTime(accessParams);
+        console.log("Average Access Time: " + accessTime.aveTime);
+        console.log("Total Access Time: " + accessTime.totalTime);
     },
 
     /*  Prepares the information of the text file   */
