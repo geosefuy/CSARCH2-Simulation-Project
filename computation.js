@@ -9,9 +9,9 @@ function convertToBlocks(blockSize, words) {
 function checkToken(token, hexadec) {
     if (hexadec) {
         return Boolean(token.match(/^[0-9a-f]+$/i)) || Boolean(token.match(/^[0-9a-f]+L[0-9a-f]+L[1-9]+[0-9]*/i));
-    } 
+    }
     else {
-        return Boolean(token.match(/^[0-9]+$/i)) || Boolean(token.match(/^[0-9]+L[0-9]+L[1-9]+[0-9]*/i)); 
+        return Boolean(token.match(/^[0-9]+$/i)) || Boolean(token.match(/^[0-9]+L[0-9]+L[1-9]+[0-9]*/i));
     }
 }
 
@@ -19,20 +19,20 @@ function checkToken(token, hexadec) {
 function checkRange(mainMemorySize, parsedInput) {
     for (let i = 0; i < parsedInput.length; i++) {
         if (parsedInput[i] >= mainMemorySize) {
-            return false; 
+            return false;
         }
     }
-    return true; 
+    return true;
 }
 
 /*  Checks if the input data is in any of the cache blocks  */
 function checkCache(cache, inputData) {
     for(let i = 0; i < cache.length; i++) {
         if (cache[i].data == inputData) {
-            return i; 
+            return i;
         }
     }
-    return -1; 
+    return -1;
 }
 
 /*    Check if power of Two    */
@@ -43,11 +43,11 @@ function checkPowerofTwo(n) {
 /*  Parses the sequence and converts loops to singleton values  */
 function parseInput(input, hexadec) {
     var parsedInput = [];
-
     var input = input.split(',');
+
     for (let i = 0; i < input.length; i++) {
         if (!checkToken(input[i].trim(), hexadec)) {
-            return false; 
+            return false;
         }
         /*  lSyntax = (Lower Bound)L(Upper Bound)L(Number of Loops) Example: 0L127L1    */
         if (input[i].includes('L')) {
@@ -62,11 +62,11 @@ function parseInput(input, hexadec) {
             }
             var times = lSyntax[2];
             if (lower > upper) {
-                return false; 
+                return false;
             }
             for (let j = 0; j < times; j++) {
                 for (let k = lower; k <= upper; k++) {
-                    parsedInput.push(parseInt(k)); 
+                    parsedInput.push(parseInt(k));
                 }
             }
         }
@@ -77,10 +77,9 @@ function parseInput(input, hexadec) {
             else {
                 var value = parseInt(input[i]);
             }
-            parsedInput.push(value); 
+            parsedInput.push(value);
         }
     }
-    
     return parsedInput; 
 }
 
@@ -94,7 +93,6 @@ function getMinScoreIndex (cacheSnapshot) {
             minScore = cacheSnapshot[i].score
         }
     }
-
     return minIndex
 }
 
@@ -104,7 +102,6 @@ function getCacheHitIndex (cacheSnapshot, content) {
             return i
         }
     }
-
     return -1
 }
 
@@ -119,7 +116,6 @@ const getResultBlock = (data) => {
     let splitSequence = Array.isArray(readSequence) ? readSequence : readSequence.split('\r\n')
 
     for (let i = 0; i < splitSequence.length; i++) {
-        
         let currentIns = splitSequence[i];
 
         if (currentIns.includes('L')) {
@@ -127,7 +123,7 @@ const getResultBlock = (data) => {
 
             if (typeof currentIns[1] === "undefined")
                 continue
-            
+
             let loopName = currentIns[0]
             let loopCount = currentIns[1]
             let startIndex = i
@@ -157,7 +153,8 @@ const getResultBlock = (data) => {
 
             i += (endIndex - startIndex)
 
-        } else if (currentIns.includes(',')) {
+        }
+        else if (currentIns.includes(',')) {
             currentIns = currentIns.split(',')
 
             let startBlock = parseInt(currentIns[0])
@@ -174,13 +171,15 @@ const getResultBlock = (data) => {
                         score: currentScore + 1
                     }
                     cacheMiss++
-                } else {
+                }
+                else {
                     cacheSnapshot[cacheHitIndex].score = currentScore + 1
                     cacheHit++
                 }
                 currentScore++
             }
-        } else {
+        }
+        else {
             let cacheHitIndex = getCacheHitIndex(cacheSnapshot, parseInt(currentIns))
 
             if (cacheHitIndex === -1) {
@@ -190,7 +189,8 @@ const getResultBlock = (data) => {
                     score: currentScore + 1
                 }
                 cacheMiss++
-            } else {
+            }
+            else {
                 cacheSnapshot[cacheHitIndex].score = currentScore + 1
                 cacheHit++
             }
@@ -224,7 +224,6 @@ const getResultAddress = (data, blockSizeParam) => {
 
     //convert addresses to blocks
     for (let i = 0; i < splitSequence.length; i++) {
-
         let currentIns = splitSequence[i]
 
         if (currentIns.includes('L')) {
@@ -232,7 +231,8 @@ const getResultAddress = (data, blockSizeParam) => {
 
             currentBlock = -1
             currentUpperAddress = -1
-        } else if (currentIns.includes(',')) {
+        }
+        else if (currentIns.includes(',')) {
             currentIns = currentIns.split(',')
 
             let startAddress = parseInt(currentIns[0])
@@ -246,7 +246,8 @@ const getResultAddress = (data, blockSizeParam) => {
 
                 currentUpperAddress = endAddress
                 currentBlock = endBlock
-            } else if (currentUpperAddress < startAddress) {
+            }
+            else if (currentUpperAddress < startAddress) {
                 let startBlock = convertToBlocks(blockSize, startAddress)
                 let endBlock = convertToBlocks(blockSize, endAddress)
 
@@ -259,7 +260,8 @@ const getResultAddress = (data, blockSizeParam) => {
 
                     currentUpperAddress = endAddress
                     currentBlock = endBlock
-                } else if (currentBlock !== endBlock) {
+                }
+                else if (currentBlock !== endBlock) {
                     /**
                      * 1,122
                      * 123,257
@@ -269,7 +271,8 @@ const getResultAddress = (data, blockSizeParam) => {
                     convertedSequence.push(`${startBlock},${endBlock}`)
                     currentUpperAddress = endAddress
                     currentBlock = endBlock
-                } else if (currentBlock === endBlock) {
+                }
+                else if (currentBlock === endBlock) {
                     /**
                      * 1,122
                      * 123,127
@@ -277,16 +280,18 @@ const getResultAddress = (data, blockSizeParam) => {
                     currentUpperAddress = endAddress
                 }
             }
-        } else {
+        }
+        else {
             let address = parseInt(currentIns)
             let block = convertToBlocks(blockSize, address)
 
             if (currentUpperAddress === -1 && currentBlock === -1 || currentUpperAddress >= address) {
                 convertedSequence.push(`${block}`)
-                
+
                 currentUpperAddress = address
                 currentBlock = block
-            } else if (currentUpperAddress < address) {
+            }
+            else if (currentUpperAddress < address) {
                 if (currentBlock !== block) {
                     /**
                      * 1,122
@@ -296,16 +301,16 @@ const getResultAddress = (data, blockSizeParam) => {
 
                     currentUpperAddress = address
                     currentBlock = block
-                } else if (currentBlock === block) {
+                }
+                else if (currentBlock === block) {
                     /**
                      * 1,122
                      * 123
                      */
                     currentUpperAddress = address
                 }
-            }            
+            }
         }
-
     }
 
     let dataInput = {
@@ -320,7 +325,7 @@ const getResultAddress = (data, blockSizeParam) => {
 }
 
 /* Calculate for the average access time */
-function getAccessTime(data){
+function getAccessTime(data) {
 
     // Initialization
     let {
@@ -346,20 +351,20 @@ function getAccessTime(data){
 
     // Non-Load Thru
     if(loadType == "nonload") {
-        missPenalty = nCacheTime + (nBlockSize*nMemoryTime) + nCacheTime; 
-        totalTime = cacheMiss*nBlockSize*(nCacheTime + nMemoryTime);
+        missPenalty = nCacheTime + (nBlockSize * nMemoryTime) + nCacheTime;
+        totalTime = cacheMiss * nBlockSize * (nCacheTime + nMemoryTime);
     // Load Thru
-    } else {
+    }
+    else {
         missPenalty = nCacheTime + nMemoryTime;
-        totalTime = cacheMiss*nBlockSize*nMemoryTime;
+        totalTime = cacheMiss * nBlockSize * nMemoryTime;
     }
 
-    aveTime = (hitRate*nCacheTime) + (missRate*missPenalty);
-    totalTime += (cacheHit*nBlockSize*nCacheTime) + (cacheMiss*nCacheTime);
+    aveTime = (hitRate * nCacheTime) + (missRate * missPenalty);
+    totalTime += (cacheHit * nBlockSize * nCacheTime) + (cacheMiss * nCacheTime);
 
     return {aveTime, missPenalty, totalTime};
 }
-
 
 module.exports = {
     /*  Used to convert cacheMemory/mainMemory to blocks when input is in words -> (Assuming Block Size is also in words)   */
@@ -371,9 +376,9 @@ module.exports = {
     checkToken: (token, hexadec) => {
         if (hexadec) {
             return Boolean(token.match(/^[0-9a-f]+$/i)) || Boolean(token.match(/^[0-9a-f]+L[0-9a-f]+L[1-9]+[0-9]*/i));
-        } 
+        }
         else {
-            return Boolean(token.match(/^[0-9]+$/i)) || Boolean(token.match(/^[0-9]+L[0-9]+L[1-9]+[0-9]*/i)); 
+            return Boolean(token.match(/^[0-9]+$/i)) || Boolean(token.match(/^[0-9]+L[0-9]+L[1-9]+[0-9]*/i));
         }
     },
 
@@ -381,10 +386,10 @@ module.exports = {
     checkRange: (mainMemorySize, parsedInput) => {
         for (let i = 0; i < parsedInput.length; i++) {
             if (parsedInput[i] >= mainMemorySize) {
-                return false; 
+                return false;
             }
         }
-        return true; 
+        return true;
     },
 
     /*    Check if power of Two    */
@@ -393,11 +398,11 @@ module.exports = {
     },
 
     isNumeric: (str) => {
-        if (typeof str != "string") return false // we only process strings!  
+        if (typeof str != "string") return false // we only process strings!
         return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
                !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
     },
-    
+
     simulate: data => {
         let blockSize = data.blockSize
         let mmSize = data.mmType !== "blocks" ? convertToBlocks(parseInt(blockSize), parseInt(data.mmSize)) : parseInt(data.mmSize)
@@ -407,6 +412,7 @@ module.exports = {
             content: null,
             score: 0
         }
+
         let cacheSnapshot = Array(cacheSize).fill(blockHolder)
         let currentScore = 0
         let cacheHit = 0
@@ -423,7 +429,7 @@ module.exports = {
         let dataOutput = data.readType === "blocks" ? getResultBlock(dataInput) : getResultAddress(dataInput, blockSize)
         // console.log(dataOutput)
 
-        /** Getting Access Time */ 
+        /** Getting Access Time */
         let accessParams = {
             blockSize: blockSize,
             cacheTime: data.cacheTime,
@@ -446,16 +452,16 @@ module.exports = {
 
     /*  Prepares the information of the text file   */
     prepareTextInfo: (values) => {
-        var content = ""; 
-        var labels = ["Cache Hits: ", "Cache Misses: ", "Average Access Time: ", "Total Access Time: "]; 
+        var content = "";
+        var labels = ["Cache Hits: ", "Cache Misses: ", "Average Access Time: ", "Total Access Time: "];
         labels.forEach((label, index) => {
-            content = content.concat(label, values[index], "\n"); 
+            content = content.concat(label, values[index], "\n");
         });
-        content = content.concat("Cache Memory: \n"); 
+        content = content.concat("Cache Memory: \n");
         var cacheMemory = values[7];
         for (let i = 0; i < cacheMemory.length; i++) {
-            content = content.concat("Block Number: ", cacheMemory[i].block, " Data: ", cacheMemory[i].data, "\n"); 
-        } 
-        return content; 
+            content = content.concat("Block Number: ", cacheMemory[i].block, " Data: ", cacheMemory[i].data, "\n");
+        }
+        return content;
     }
 }
