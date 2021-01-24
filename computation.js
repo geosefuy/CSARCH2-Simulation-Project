@@ -401,7 +401,7 @@ module.exports = {
     simulate: data => {
         let blockSize = data.blockSize
         let mmSize = data.mmType !== "blocks" ? convertToBlocks(parseInt(blockSize), parseInt(data.mmSize)) : parseInt(data.mmSize)
-        let cacheSize = data.mmType !== "blocks" ? convertToBlocks(parseInt(blockSize), parseInt(data.cacheSize)) : parseInt(data.cacheSize)
+        let cacheSize = data.cacheType !== "blocks" ? convertToBlocks(parseInt(blockSize), parseInt(data.cacheSize)) : parseInt(data.cacheSize)
 
         let blockHolder = {
             content: null,
