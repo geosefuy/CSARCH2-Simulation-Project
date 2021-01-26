@@ -85,6 +85,22 @@ L1            // syntax: loop name
 
 #### Example Input
 
+*This example is lifted from #4 of the Cache Problem Set*
+```
+0x200
+0x204
+0x208
+0x20C
+0x2F4
+0x2F0
+0x200
+0x204
+0x218
+0x21C
+0x24C
+0x2F4
+```
+
 *This example is lifted from #6 of the Cache Problem Set*
 ```
 0, 127
