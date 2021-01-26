@@ -35,54 +35,12 @@ function checkCache(cache, inputData) {
     return -1;
 }
 
-/*    Check if power of Two    */
+/*  Checks if power of two   */
 function checkPowerofTwo(n) {
     return Boolean(n && (n & (n - 1)) === 0);
 }
 
-/*  Parses the sequence and converts loops to singleton values  */
-function parseInput(input, hexadec) {
-    var parsedInput = [];
-    var input = input.split(',');
-
-    for (let i = 0; i < input.length; i++) {
-        if (!checkToken(input[i].trim(), hexadec)) {
-            return false;
-        }
-        /*  lSyntax = (Lower Bound)L(Upper Bound)L(Number of Loops) Example: 0L127L1    */
-        if (input[i].includes('L')) {
-            var lSyntax = input[i].split('L');
-            if (hexadec) {
-                var lower = parseInt(lSyntax[0], 16);
-                var upper = parseInt(lSyntax[1], 16);
-            }
-            else {
-                var lower = parseInt(lSyntax[0]);
-                var upper = parseInt(lSyntax[1]);
-            }
-            var times = lSyntax[2];
-            if (lower > upper) {
-                return false;
-            }
-            for (let j = 0; j < times; j++) {
-                for (let k = lower; k <= upper; k++) {
-                    parsedInput.push(parseInt(k));
-                }
-            }
-        }
-        else {
-            if (hexadec) {
-                var value = parseInt(input[i], 16);
-            }
-            else {
-                var value = parseInt(input[i]);
-            }
-            parsedInput.push(value);
-        }
-    }
-    return parsedInput; 
-}
-
+/*  Used to get the lowest score among all the data in the cache block  */
 function getMinScoreIndex (cacheSnapshot) {
     let minIndex = 0
     let minScore = Number.MAX_SAFE_INTEGER
@@ -96,6 +54,7 @@ function getMinScoreIndex (cacheSnapshot) {
     return minIndex
 }
 
+/*  Used to get the index of the cache block where a cache hit occurred  */
 function getCacheHitIndex (cacheSnapshot, content) {
     for (let i = 0; i < cacheSnapshot.length; i++) {
         if (cacheSnapshot[i].content === content) {
@@ -105,6 +64,7 @@ function getCacheHitIndex (cacheSnapshot, content) {
     return -1
 }
 
+/*  Simulates the FA / LRU cache replacement algorithm  */
 const getResultBlock = (data) => {
     let {
         readSequence,
@@ -207,6 +167,7 @@ const getResultBlock = (data) => {
     }
 }
 
+/*  Simulates the FA / LRU cache replacement algorithm  */
 const getResultAddress = (data, blockSizeParam) => {
     let {
         readSequence,
@@ -324,10 +285,8 @@ const getResultAddress = (data, blockSizeParam) => {
     return getResultBlock(dataInput)
 }
 
-/* Calculate for the average access time */
+/*  Used to get the average and total access time for both load-through and non-load through    */
 function getAccessTime(data) {
-
-    // Initialization
     let {
         blockSize,
         cacheTime,
@@ -349,11 +308,11 @@ function getAccessTime(data) {
     let hitRate = cacheHit / currentScore;
     let missRate = cacheMiss / currentScore;
 
-    // Non-Load Thru
+    // Non-Load Through
     if(loadType == "nonload") {
         missPenalty = nCacheTime + (nBlockSize * nMemoryTime) + nCacheTime;
         totalTime = cacheMiss * nBlockSize * (nCacheTime + nMemoryTime);
-    // Load Thru
+    // Load Through
     }
     else {
         missPenalty = nCacheTime + nMemoryTime;
