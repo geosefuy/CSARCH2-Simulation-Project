@@ -361,6 +361,16 @@ module.exports = {
         return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
                !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
     },
+     isHex: (h) => {
+        h = h.trim()
+        let a = parseInt(h,16);
+        return (h[0] === '0' && h[1] === 'x' && a.toString(16) === h.substr(2).toLowerCase())
+    },
+        
+    isDec: (d) => {
+        let a = parseInt(d);
+        return (a.toString().trim() === d.trim())
+    },
 
     simulate: data => {
         let blockSize = data.blockSize

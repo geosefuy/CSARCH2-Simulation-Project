@@ -3,6 +3,8 @@ const {
     checkPowerofTwo,
     isNumeric,
     convertToBlocks,
+    isHex,
+    isDec,
     textFile
 } = require("./computation")
 
@@ -201,41 +203,125 @@ module.exports = {
                     seqError = true;
                 }
                 else{
-                    if (!isNumeric(currentIns[1].trim())){
-                        error = true;
-                        seqError = true;
-                    }
-                    else if (!isNumeric(currentIns[0].trim())){
-                        error = true;
-                        seqError = true;
-                    }
-                    else{             
-                        if (parseInt(currentIns[0]) < 0 || parseInt(currentIns[1]) < 0 || parseInt(currentIns[0]) > parseInt(currentIns[1])){
-                            error = true;
-                            seqError = true;
-                        }
-                        if (data.readType == "blocks"){
-                            if (parseInt(currentIns[0]) >= mmSize || parseInt(currentIns[1]) >= mmSize){
+                    if (isHex(currentIns[0])){
+                        if (isHex(currentIns[1])){
+                            if (parseInt(currentIns[0], 16) < 0 || parseInt(currentIns[1], 16) < 0 || parseInt(currentIns[0], 16) > parseInt(currentIns[1], 16)){
                                 error = true;
                                 seqError = true;
+                            }
+                            if (data.readType == "blocks"){
+                                if (parseInt(currentIns[0], 16) >= mmSize || parseInt(currentIns[1], 16) >= mmSize){
+                                    error = true;
+                                    seqError = true;
+                                }
+                            }
+                            else{
+                                let currBlock1 = convertToBlocks(parseInt(data.blockSize), parseInt(currentIns[0], 16))
+                                let currBlock2 = convertToBlocks(parseInt(data.blockSize), parseInt(currentIns[1], 16))
+                                if (currBlock1 >= mmSize || currBlock2 >= mmSize){
+                                    error = true;
+                                    seqError = true;
+                                }
+                            }
+                        }
+                        else if (isDec(currentIns[1])){
+                            if (parseInt(currentIns[0], 16) < 0 || parseInt(currentIns[1]) < 0 || parseInt(currentIns[0], 16) > parseInt(currentIns[1])){
+                                error = true;
+                                seqError = true;
+                            }
+                            if (data.readType == "blocks"){
+                                if (parseInt(currentIns[0], 16) >= mmSize || parseInt(currentIns[1]) >= mmSize){
+                                    error = true;
+                                    seqError = true;
+                                }
+                            }
+                            else{
+                                let currBlock1 = convertToBlocks(parseInt(data.blockSize), parseInt(currentIns[0], 16))
+                                let currBlock2 = convertToBlocks(parseInt(data.blockSize), parseInt(currentIns[1]))
+                                if (currBlock1 >= mmSize || currBlock2 >= mmSize){
+                                    error = true;
+                                    seqError = true;
+                                }
                             }
                         }
                         else{
-                            let currBlock1 = convertToBlocks(parseInt(data.blockSize), parseInt(currentIns[0]))
-                            let currBlock2 = convertToBlocks(parseInt(data.blockSize), parseInt(currentIns[1]))
-                            if (currBlock1 >= mmSize || currBlock2 >= mmSize){
+                            error = true;
+                            seqError = true;
+                        }
+                    }
+                    else if (isDec(currentIns[0])){
+                        if (isHex(currentIns[1])){
+                            if (parseInt(currentIns[0]) < 0 || parseInt(currentIns[1], 16) < 0 || parseInt(currentIns[0]) > parseInt(currentIns[1], 16)){
                                 error = true;
                                 seqError = true;
                             }
+                            if (data.readType == "blocks"){
+                                if (parseInt(currentIns[0]) >= mmSize || parseInt(currentIns[1], 16) >= mmSize){
+                                    error = true;
+                                    seqError = true;
+                                }
+                            }
+                            else{
+                                let currBlock1 = convertToBlocks(parseInt(data.blockSize), parseInt(currentIns[0]))
+                                let currBlock2 = convertToBlocks(parseInt(data.blockSize), parseInt(currentIns[1], 16))
+                                if (currBlock1 >= mmSize || currBlock2 >= mmSize){
+                                    error = true;
+                                    seqError = true;
+                                }
+                            }
+                            console.log(error);
                         }
+                        else if (isDec(currentIns[1])){
+                            if (parseInt(currentIns[0]) < 0 || parseInt(currentIns[1]) < 0 || parseInt(currentIns[0]) > parseInt(currentIns[1])){
+                                error = true;
+                                seqError = true;
+                            }
+                            if (data.readType == "blocks"){
+                                if (parseInt(currentIns[0]) >= mmSize || parseInt(currentIns[1]) >= mmSize){
+                                    error = true;
+                                    seqError = true;
+                                }
+                            }
+                            else{
+                                let currBlock1 = convertToBlocks(parseInt(data.blockSize), parseInt(currentIns[0]))
+                                let currBlock2 = convertToBlocks(parseInt(data.blockSize), parseInt(currentIns[1]))
+                                if (currBlock1 >= mmSize || currBlock2 >= mmSize){
+                                    error = true;
+                                    seqError = true;
+                                }
+                            }
+                        }
+                        else{
+                            error = true;
+                            seqError = true;
+                        }
+                    }
+                    else{
+                        error = true;
+                        seqError = true;
                     }
                 }
             } else {
-                if (!isNumeric(currentIns.trim())){
-                    error = true;
-                    seqError = true;
+                if (isHex(currentIns)){
+                    if (parseInt(currentIns, 16) < 0){
+                        error = true;
+                        seqError = true;
+                    }
+                    if (data.readType == "blocks"){
+                        if (parseInt(currentIns, 16) >= mmSize){
+                            error = true;
+                            seqError = true;
+                        }
+                    }
+                    else{
+                        let currBlock = convertToBlocks(parseInt(data.blockSize), parseInt(currentIns, 16))
+                        if (currBlock >= mmSize){
+                            error = true;
+                            seqError = true;
+                        }
+                    }
                 }
-                else{
+                else if (isDec(currentIns)){
                     if (parseInt(currentIns) < 0){
                         error = true;
                         seqError = true;
@@ -253,6 +339,10 @@ module.exports = {
                             seqError = true;
                         }
                     }
+                }
+                else{
+                    error = true;
+                    seqError = true;
                 }
             }
         }
