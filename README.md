@@ -27,32 +27,60 @@
 1. Choose between *blocks* and *address* for your read sequence.
 2. Either way, there will be four options for inputting a sequence:
 
-Singleton block / address:
+Singleton block / address (Decimal):
 ```
-1         // syntax: block / addrress
-```
-
-Continuous blocks / addresses:
-```
-1,3       // syntax: starting block / address,ending block / address
+1             // syntax: block / addrress
 ```
 
-Looped blocks / addresses:
+Continuous blocks / addresses (Decimal):
 ```
-L1,10     // syntax: loop name (should start with uppercase L),number of iterations
-1,3       // syntax: any number of singleton / continuous sequence
-L1        // syntax: loop name
+1, 3          // syntax: starting block / address, ending block / address
 ```
 
-Nest-looped blocks / addresses
+Looped blocks / addresses (Decimal):
 ```
-L1,10     // syntax: loop name (should start with uppercase L),number of iterations
-1,3       // syntax: any number of singleton / continuous sequence
-L2,20    
+L1, 10        // syntax: loop name (should start with uppercase L), number of iterations
+1, 3          // syntax: any number of singleton / continuous sequence
+L1            // syntax: loop name
+```
+
+Nest-looped blocks / addresses (Decimal):
+```
+L1, 10        // syntax: loop name (should start with uppercase L) ,number of iterations
+1, 3          // syntax: any number of singleton / continuous sequence
+L2, 20    
 4
-5,7
-L2        // an inner loop should have its closing signal inside the outer loop
-L1        // syntax: loop name
+5, 7
+L2            // an inner loop should have its closing signal inside the outer loop
+L1            // syntax: loop name
+```
+
+Singleton block / address (Hexadecimal):
+```
+0x01          // syntax: block / addrress
+```
+
+Continuous blocks / addresses (Hexadecimal):
+```
+0x01, 0x03    // syntax: starting block / address, ending block / address
+```
+
+Looped blocks / addresses (Hexadecimal):
+```
+L1, 10        // syntax: loop name (should start with uppercase L), number of iterations
+0x01, 0x03    // syntax: any number of singleton / continuous sequence
+L1            // syntax: loop name
+```
+
+Nest-looped blocks / addresses (Hexadecimal):
+```
+L1, 10        // syntax: loop name (should start with uppercase L) ,number of iterations
+0x01, 0x03    // syntax: any number of singleton / continuous sequence
+L2, 20    
+0x04
+0x05, 0x07
+L2            // an inner loop should have its closing signal inside the outer loop
+L1            // syntax: loop name
 ```
 
 #### Example Input
@@ -86,3 +114,7 @@ L1
 1280,1407
 1408,1535
 ```
+
+### Output
+1. All outputs in the Data section are in their decimal form.
+2. Invalid inputs have their own corresponding error messages.
