@@ -46,7 +46,7 @@ L1            // syntax: loop name
 
 Nest-looped blocks / addresses (Decimal):
 ```
-L1, 10        // syntax: loop name (should start with uppercase L) ,number of iterations
+L1, 10        // syntax: loop name (should start with uppercase L), number of iterations
 1, 3          // syntax: any number of singleton / continuous sequence
 L2, 20    
 4
@@ -74,7 +74,7 @@ L1            // syntax: loop name
 
 Nest-looped blocks / addresses (Hexadecimal):
 ```
-L1, 10        // syntax: loop name (should start with uppercase L) ,number of iterations
+L1, 10        // syntax: loop name (should start with uppercase L), number of iterations
 0x01, 0x03    // syntax: any number of singleton / continuous sequence
 L2, 20    
 0x04
