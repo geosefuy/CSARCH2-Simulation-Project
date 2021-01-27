@@ -25,7 +25,7 @@
 
 ### Read Sequence
 1. Choose between *blocks* and *address* for your read sequence.
-2. Either way, there will be four options for inputting a sequence:
+2. Either way, there will be eight options for inputting a sequence:
 
 Singleton block / address (Decimal):
 ```
