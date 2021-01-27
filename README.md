@@ -137,6 +137,8 @@ L1
 3. Clicking the Export to Text File button allows users to download the output from their respective inputs to their remote computer.
 
 #### Example Output
+
+*This output is based from #6 of the Cache Problem Set*
 | Cache Block # |     Score     |     Data      |
 | :-----------: | :-----------: | :-----------: |
 |       0       |      469      |       7       |
