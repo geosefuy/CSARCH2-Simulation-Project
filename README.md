@@ -134,3 +134,16 @@ L1
 ### Output
 1. All outputs in the Data section are in their decimal form.
 2. Invalid inputs have their own corresponding error messages.
+3. Clicking the Export to Text File button allows users to download the output from their respective inputs to their remote computer.
+
+#### Example Output
+| Cache Block # |     Score     |     Data      |
+| :-----------: | :-----------: | :------------ |
+|       0       |      469      |       7       |
+|       1       |      470      |       8       |
+|       2       |      471      |       9       |
+|       3       |      472      |      10       |
+|       4       |      473      |      11       |
+|       5       |      466      |       4       |
+|       6       |      467      |       5       |
+|       7       |      468      |       6       |
