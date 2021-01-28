@@ -9,7 +9,7 @@ const { home, calculate } = require('./route');
 
 
 // Config
-app.set('port', process.env.port || port); // set express to use this port
+app.set('port', process.env.PORT || port); // set express to use this port
 app.set('views', __dirname + '/views');    // view folder config
 app.set('view engine', 'ejs');
 app.engine('html', require('ejs').renderFile);
@@ -21,6 +21,6 @@ app.get('/', home);
 app.post('/calculate', calculate);
 
 // Set the port the app will listen on
-app.listen(process.env.port || port, () => {
+app.listen(process.env.PORT || port, () => {
     console.log(`Proceed to http://localhost:${process.env.port || port} to view app.`);
 });
