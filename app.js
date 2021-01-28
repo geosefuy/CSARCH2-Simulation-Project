@@ -21,6 +21,6 @@ app.get('/', home);
 app.post('/calculate', calculate);
 
 // Set the port the app will listen on
-app.listen(port, () => {
+app.listen(process.env.port || port, () => {
     console.log(`Proceed to http://localhost:${process.env.port || port} to view app.`);
 });
