@@ -14,7 +14,6 @@
 ## Using the App
 
 ### Input
-
 1. Choose the *addressing mode* by clicking on either *Word Addressable* or *Byte Addressable*.
 2. Enter the block size of your cache and main memory. This value should be a power of two.
 3. Choose the *cache miss algorithm* by clicking on either *Non Load-Through* or *Load-Through*.
